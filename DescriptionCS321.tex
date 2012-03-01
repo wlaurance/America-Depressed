@@ -1,0 +1,207 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{psfrag}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{setspace}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9in}
+\newcommand{\tab}{\hspace*{2em}}
+
+\title{\bf Finite Automata - HW5}
+\author{Erica Cole}
+
+\begin{document}
+\maketitle
+\begin{center}
+ Collaborator: Will Laurance
+\end{center}
+
+\section*{Problem 2.6(b)}
+Give a context-free grammar that generates the language: The complement of the language $\{a^nb^n|n \geq 0 \}$.\\
+
+Let's define $L = \{a^nb^n|n \geq 0 \}$.  Then the complement of $L$ is $\sum^* - L$.  For this language, call it $M$, we know that 
+there are three cases:
+  \begin{enumerate}
+   \item $m>n$: $A_1 = \{a^mb^n |m > n \geq 0 \}$
+   \item $m<n$: $A_2 = \{a^mb^n |0 \leq m < n \}$
+   \item contains substring $ba$: $A_3 = \{w \in \{a,b\}^*| ba \text{ is a substring of }w \}$
+  \end{enumerate}
+
+Then we know that $M = A_1 \cup A_2 \cup A_3$.  So let's define a context-free grammar that generates the three cases.  Let 
+$G = \{V, \sum, S, R \}$ where:
+  \begin{itemize}
+   \item V: $\{S,X,Y,Z,W \}$
+   \item $\sum$: $\{a,b \}$
+   \item S: S
+   \item R:
+  \end{itemize}
+  \begin{align*}
+   \text{S} &\rightarrow \text{X }|\text{ Y }|\text{ Z}\\
+   \text{X} &\rightarrow \text{a }|\text{ aX }|\text{ aXb}\\
+   \text{Y} &\rightarrow \text{b }|\text{ Yb }|\text{ aYb}\\
+   \text{Z} &\rightarrow \text{WbaW}\\
+   \text{W} &\rightarrow \text{WW }|\text{ a }|\text{ b }|\text{ }\varepsilon
+  \end{align*}
+
+
+\section*{Problem 2.6(d)}
+Give a context-free grammar that generates the language: $\{x_1\#x_2\#\cdots \#x_k|k \geq 1$ each $x_1 \in \{a,b\}^*$ and for 
+some $i$ and $j$, $x_i = x_j^\mathcal{R}\}$\\
+
+For this language there are two cases:\\
+  \begin{enumerate}
+   \item $i=j$: This creates a palindrome for $x_i$
+   \item $i \neq j$
+  \end{enumerate}
+
+So we define a context-free grammar that generates these two cases.  Let $G = \{V, \sum, S, R \}$ where:
+  \begin{itemize}
+   \item V: $\{S,A,B,C,D,E,F \}$
+   \item $\sum$: $\{a,b \}$
+   \item S: S
+   \item R:
+  \end{itemize}
+  \begin{align*}
+   \text{S} &\rightarrow \text{ABC }|\text{ ADC}\\
+   \text{B} &\rightarrow \text{aBa }|\text{ bBb }|\text{ a }|\text{ b }|\text{ }\varepsilon\\
+   \text{D} &\rightarrow \text{aDa }|\text{ bDb }|\text{ \#A}\\
+   \text{C} &\rightarrow \text{\#E }|\text{ }\varepsilon\\
+   \text{E} &\rightarrow \text{\#E }|\text{ Ea }|\text{ Eb }|\text{ }\varepsilon\\
+   \text{A} &\rightarrow \text{F\# }|\text{ }\varepsilon\\
+   \text{F} &\rightarrow \text{F\# }|\text{ aF }|\text{ bF }|\text{ }\varepsilon
+  \end{align*}
+
+\section*{Problem 2.9}
+Give a context-free grammar that generates the language: $A = \{a^ib^jc^k|i=j \text{ or } j=k \text{ where } i,j,k \geq 0 \}$.  
+Is your grammar ambiguous? Why or why not?\\
+
+Consider the following CFG for A.\\
+  \begin{align*}
+   \text{S} &\rightarrow \text{AB }|\text{ CD}\\
+   \text{A} &\rightarrow \text{aA }|\text{ }\varepsilon\\
+   \text{B} &\rightarrow \text{bBc }|\text{ }\varepsilon\\
+   \text{C} &\rightarrow \text{aCb }|\text{ }\varepsilon\\
+   \text{D} &\rightarrow \text{cD }|\text{ }\varepsilon
+  \end{align*}
+
+Yes, this grammar is ambiguous.  This can be seen when considering the derivations for abc.  Consider:\\
+\begin{itemize}
+ \item AB $\Rightarrow$ aAB $\Rightarrow$ aB $\Rightarrow$ abBc $\Rightarrow$ abc
+ \item CD $\Rightarrow$ aCbD $\Rightarrow$ abD $\Rightarrow$ abcD $\Rightarrow$ abc
+\end{itemize}
+
+These two derivations correctly construct the string abc using this grammar, but they are not equivalent.  Thus the grammar is 
+ambiguous.
+
+
+\section*{Problem 2.13}
+Let $G = (V, \varSigma, R, S)$ be the following grammar. $V = \{S,T,U\}$; $\varSigma = \{0,\#\}$; and $R$ is the set of rules:
+  \begin{align*}
+   \text{S} &\rightarrow  \text{TT }|\text{ U} \\
+   \text{T} &\rightarrow 0\text{T }|\text{ T}0\text{ }|\text{ }\# \\
+   \text{U} &\rightarrow 0\text{U}00\text{ }|\text{ }\#
+  \end{align*}
+  \begin{enumerate}
+   \item Describe $L(G)$ in English.\\
+      \tab To be able to describe $L(G)$ we construct a regular expression for it.  Consider $L(G) = \{0^* \# 0^* \# 0^* \} \cup 
+      \{0^n \# 0^{2n} \}$.  Then there are two parts that create $L(G)$.
+      \begin{enumerate}
+       \item $0\cdots0 \# 0\cdots0 \# 0\cdots0$ where each set of 0s has length of 0 or greater.
+       \item $0\cdots0 \# 0\cdots0$ where the second set of 0s has length 2 times the length of the first set of 0s, or both sets
+	  can have length 0.
+      \end{enumerate}
+   \item Prove that $L(G)$ is not regular.\\
+      \tab To prove that $L(G)$ is not regular, we will use the Pumping Lemma.  Assume that $L(G)$ is a regular language, then the 
+      Pumping Lemma applies to $L(G)$.  Let $p$ be the constant in the Pumping Lemma.  Select $s = 0^p\#0^{2p}$.  Then wek now that 
+      $|s| = 2p+p+1 > p$.  Then $s=xyz$ with $|y|>0$ and $|xy| \leq p$.  So we know that $xy$ contains only 0s from the first set of 
+      0s, and say that $y$ contains $i$ of those 0s.  Then consider $xy^0z = 0^{p-i}\#0^{2p}$.  By the Pumping Lemma, this string 
+      must be in $L(G)$, however there are $p-i$ 0s in the first set and more than $2(p-i)$ 0s in the second set.  So the string is 
+      not in $L(G)$.  Thus, $L(G)$ is not a regular language.
+  \end{enumerate}
+
+\section*{Problem 2.14}
+Convert the following CFG into an equivalent CFG in Chomsky Normal Form, using the procedure given in Theorem 2.9.
+  \begin{align*}
+   \text{A} &\rightarrow \text{BAB }|\text{ B }|\text{ }\varepsilon \\
+   \text{B} &\rightarrow 00\text{ }|\text{ }\varepsilon 
+  \end{align*}
+
+First we start by creating a new start variable $S_0$.\\
+  \begin{align*}
+   S_0 &\rightarrow \text{A}\\
+   \text{A} &\rightarrow \text{BAB }|\text{ B }|\text{ }\varepsilon \\
+   \text{B} &\rightarrow 00\text{ }|\text{ }\varepsilon 
+  \end{align*}
+
+Then we elminate the $\varepsilon$ rules, starting with A $\rightarrow \varepsilon$, then B $\rightarrow \varepsilon$.
+  \begin{align*}
+   S_0 &\rightarrow \text{A }|\text{ }\varepsilon\\
+   \text{A} &\rightarrow \text{BAB }|\text{ B }|\text{ BB} \\
+   \text{B} &\rightarrow 00\text{ }|\text{ }\varepsilon 
+  \end{align*}
+
+  \begin{align*}
+   S_0 &\rightarrow \text{A }|\text{ }\varepsilon\\
+   \text{A} &\rightarrow \text{AB }|\text{ BA }|\text{ BAB }|\text{ B }|\text{ BB }|\text{ A} \\
+   \text{B} &\rightarrow 00
+  \end{align*}
+
+Then we eliminate the unit rules, starting with A, then $S_0$.
+  \begin{align*}
+   S_0 &\rightarrow \text{A }|\text{ }\varepsilon\\
+   \text{A} &\rightarrow \text{AB }|\text{ BA }|\text{ BAB }|\text{ }00\text{ }|\text{ BB }\\
+   \text{B} &\rightarrow 00
+  \end{align*}
+
+  \begin{align*}
+   S_0 &\rightarrow \text{AB }|\text{ BA }|\text{ BAB }|\text{ }00\text{ }|\text{ BB }|\text{ }\varepsilon\\
+   \text{A} &\rightarrow \text{AB }|\text{ BA }|\text{ BAB }|\text{ }00\text{ }|\text{ BB }\\
+   \text{B} &\rightarrow 00
+  \end{align*}
+
+Then we create a new rule C $\rightarrow 0$ to adjust the double terminal for B.
+  \begin{align*}
+   S_0 &\rightarrow \text{AB }|\text{ BA }|\text{ BAB }|\text{ CC }|\text{ BB }|\text{ }\varepsilon\\
+   \text{A} &\rightarrow \text{AB }|\text{ BA }|\text{ BAB }|\text{ CC }|\text{ BB }\\
+   \text{B} &\rightarrow \text{CC}\\
+   \text{C} &\rightarrow 0
+  \end{align*}
+
+Finally we create a new rule D $\rightarrow$ BA to adjust the triple nonterminals in $S_0$ and $A$.
+  \begin{align*}
+   S_0 &\rightarrow \text{AB }|\text{ BA }|\text{ DB }|\text{ CC }|\text{ BB }|\text{ }\varepsilon\\
+   \text{A} &\rightarrow \text{AB }|\text{ BA }|\text{ DB }|\text{ CC }|\text{ BB }\\
+   \text{B} &\rightarrow \text{CC}\\
+   \text{C} &\rightarrow 0\\
+   \text{D} &\rightarrow \text{BA}
+  \end{align*}
+
+\section*{Problem 5}
+Give CFGs for following languages: 
+  \begin{enumerate}
+   \item $A=\{a^i b^j c^k | i+j=k\}$\\
+      Consider the following context-free grammar:\\
+      \begin{align*}
+       \text{S} &\rightarrow \text{W }|\text{ N }|\text{ }\varepsilon\\
+       \text{W} &\rightarrow \text{aWc }|\text{ N }|\text{ }\varepsilon\\
+       \text{N} &\rightarrow \text{bNc }|\text{ }\varepsilon
+      \end{align*}
+   \item $B=\{a^i b^j c^k | i+j\not=k\}$\\
+      Consider the following context-free grammar:\\
+      \begin{align*}
+       \text{S} &\rightarrow \text{H }|\text{ G}\\
+       \text{H} &\rightarrow \text{aJ }|\text{ Jb}\\
+       \text{J} &\rightarrow \text{aJ }|\text{ Jb }|\text{ aJb }|\text{ N }|\text{ }\varepsilon\\
+       \text{N} &\rightarrow \text{aJc }|\text{ P }|\text{ }\varepsilon\\
+       \text{P} &\rightarrow \text{bPc }|\text{ }\varepsilon\\
+       \text{G} &\rightarrow \text{Kc}\\
+       \text{K} &\rightarrow \text{Kc }|\text{ aKc }|\text{ M }\text{ }\varepsilon\\
+       \text{M} &\rightarrow \text{bMc }|\text{ }\varepsilon
+      \end{align*}
+
+  \end{enumerate}
+
+\end{document}
