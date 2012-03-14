@@ -1,29 +1,34 @@
 (function() {
-  var http, winston;
+  var http, service, winston;
 
   http = require('http');
 
   winston = require('winston');
 
+  service = require('./service');
+
   exports.createServer = function(port) {
-    var server,
+    var router, server,
       _this = this;
+    router = service.createRouter();
     server = http.createServer(function(request, response) {
-      var data;
-      data = '';
+      var body;
+      body = '';
       winston.info('Incoming Request', {
         url: request.url
       });
       request.on('data', function(chunk) {
-        return data += chunk;
+        return body += chunk;
       });
-      response.writeHead(501, {
-        'Content-Type': 'application/json'
+      return request.on('end', function() {
+        return router.handle(request, body, function(route) {
+          response.writeHead(route.status, route.headers);
+          return response.end(route.body);
+        });
       });
-      return response.end(JSON.stringify({
-        message: 'not implemented'
-      }));
     });
+    /*if port set it to listen
+    */
     if (port) server.listen(port);
     return server;
   };
