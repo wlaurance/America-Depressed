@@ -1,0 +1,13 @@
+{
+  "name": "america-depressed",
+  "description": "non pci compliant cc app",
+  "author": "Will Laurance <w.laurance@gmail.com>",
+  "version": "0.0.1",
+  "dependencies": {
+    "coffee-script":"1.2.x"
+  },
+  "devDependencies": {
+    "vows": "0.5.x"
+  },
+  "engine": "node >= 0.4.1"
+}
