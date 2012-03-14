@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+var sys = require('sys'),
+    path = require('path'),
+    argv = require('optimist').argv;
+    
+var help = [
+    "usage: server [options]",
+    "",
+    "Runs america-depressed node server",
+    "",
+    "options:",
+    "  -p             Port that you want the home server to run on      [8000]",
+    "  -s, --setup    Indicates we should configure the database first  [false]",
+    "  -a, --auth     user:password combo to use for HTTP Basic Auth    [none]",
+    "  -h, --help     You're staring at it",
+].join('\n');
+
+if (argv.h || argv.help) {
+  return sys.puts(help);
+}
+
+var target, options = {
+  port: argv.p || 8000,
+  setup: argv.s || argv.setup || false, 
+  basicAuth: argv.a || argv.auth || null
+};
+
+target = argv.t || argv.target || '';
+
+var pinpoint = require(path.join('..', 'lib', target, 'server'));
+pinpoint.start(options, function (err, server) {
+  if (err) {
+    return sys.puts('Error starting amsdep server: ' + err.message);
+  }
+  
+  sys.puts('America-Depressed server listening for ' + target + ' on http://127.0.0.1:' + options.port);
+});
+

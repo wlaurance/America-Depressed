@@ -4,7 +4,15 @@
   "author": "Will Laurance <w.laurance@gmail.com>",
   "version": "0.0.1",
   "dependencies": {
-    "coffee-script":"1.2.x"
+    "coffee-script":"1.2.x",
+    "cradle": ">= 0.5.2",
+    "journey": ">= 0.4.0-pre",
+    "http-console": ">= 0.6.0",
+    "optimist": ">= 0.1.5",
+    "winston": ">= 0.2.1"
+  },
+  "bin": {
+    "america-depressed": "./bin/server"
   },
   "devDependencies": {
     "vows": "0.5.x"
