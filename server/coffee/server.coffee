@@ -1,8 +1,8 @@
 http = require 'http'
 winston = require 'winston'
 service = require './service'
-
-exports.createServer = (port)->
+database = require './database'
+exports.createServer = (port, database)->
   router = do service.createRouter
   server = http.createServer (request, response) =>
     body = ''
@@ -22,5 +22,6 @@ exports.createServer = (port)->
   server
 
 exports.start = (options, callback) ->
-  server = exports.createServer options.port
-  callback null, server
+  db = new database.DB options
+  winston.info 'Creating db'
+  callback null, exports.createServer options.port, db

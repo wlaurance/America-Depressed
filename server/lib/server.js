@@ -1,5 +1,5 @@
 (function() {
-  var http, service, winston;
+  var database, http, service, winston;
 
   http = require('http');
 
@@ -7,7 +7,9 @@
 
   service = require('./service');
 
-  exports.createServer = function(port) {
+  database = require('./database');
+
+  exports.createServer = function(port, database) {
     var router, server,
       _this = this;
     router = service.createRouter();
@@ -34,9 +36,10 @@
   };
 
   exports.start = function(options, callback) {
-    var server;
-    server = exports.createServer(options.port);
-    return callback(null, server);
+    var db;
+    db = new database.DB(options);
+    winston.info('Creating db');
+    return callback(null, exports.createServer(options.port, db));
   };
 
 }).call(this);
