@@ -78,8 +78,7 @@
         if (err) throw err;
         return client.query(sql, function(err, result) {
           if (err) throw err;
-          cb(result);
-          return winston.info(result);
+          return cb(result);
         });
       });
     };

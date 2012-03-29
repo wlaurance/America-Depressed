@@ -49,8 +49,5 @@ class DB
       client.query sql, (err, result)->
         throw err if err
         cb result
-        winston.info result
-
-
 
 exports.DB = DB
