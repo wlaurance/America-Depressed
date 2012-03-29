@@ -3,7 +3,7 @@
 
   journey = require("journey");
 
-  exports.createRouter = function() {
+  exports.createRouter = function(db) {
     var router;
     router = new journey.Router({
       strict: false,
@@ -34,6 +34,15 @@
       return this.del(/\/([\w|\d|\-|\_]+)/).bind(function(res, id) {
         return res.send(501, {}, {
           action: "delete"
+        });
+      });
+    });
+    router.path(/\/time/, function() {
+      return this.get().bind(function(res) {
+        return db.query("SELECT NOW() as when", function(result) {
+          return res.send(200, {}, {
+            hello: result.rows[0].when
+          });
         });
       });
     });

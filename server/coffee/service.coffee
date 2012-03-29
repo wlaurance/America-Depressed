@@ -1,5 +1,5 @@
 journey = require("journey")
-exports.createRouter = ->
+exports.createRouter = (db)->
   router = new (journey.Router)(
     strict: false
     strictUrls: false
@@ -25,5 +25,12 @@ exports.createRouter = ->
     @del(/\/([\w|\d|\-|\_]+)/).bind (res, id) ->
       res.send 501, {},
         action: "delete"
+
+  router.path /\/time/, ->
+    @get().bind (res) ->
+      db.query "SELECT NOW() as when", (result)->
+        res.send 200, {},
+          hello: result.rows[0].when
+
 
   router

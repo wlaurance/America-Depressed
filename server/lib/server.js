@@ -12,7 +12,7 @@
   exports.createServer = function(port, database) {
     var router, server,
       _this = this;
-    router = service.createRouter();
+    router = service.createRouter(database);
     server = http.createServer(function(request, response) {
       var body;
       body = '';

@@ -3,7 +3,7 @@ winston = require 'winston'
 service = require './service'
 database = require './database'
 exports.createServer = (port, database)->
-  router = do service.createRouter
+  router = service.createRouter database
   server = http.createServer (request, response) =>
     body = ''
     winston.info 'Incoming Request', { url: request.url }
