@@ -23,13 +23,18 @@
       this.port = '5432';
       this.user = this.opts.dbuser;
       if (!(this.opts.pass != null)) {
-        i = rl.createInterface(process.stdin, process.stdout, null);
-        i.question("Password? ", function(pass) {
-          _this.pass = pass;
-          _this.resume();
-          i.close();
-          return process.stdin.destroy();
-        });
+        if (process.env.PGPASSWORD != null) {
+          this.pass = process.env.PGPASSWORD;
+          this.resume();
+        } else {
+          i = rl.createInterface(process.stdin, process.stdout, null);
+          i.question("Password? ", function(pass) {
+            _this.pass = pass;
+            _this.resume();
+            i.close();
+            return process.stdin.destroy();
+          });
+        }
       } else {
         this.pass = this.opts.pass;
         this.resume();

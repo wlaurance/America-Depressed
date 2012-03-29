@@ -16,7 +16,7 @@ exports.createServer = (port, database)->
         response.writeHead route.status, route.headers
         response.end route.body
 
-  ###if port set it to listen####
+  ###if port, set it to listen####
   if port
     server.listen port
   server

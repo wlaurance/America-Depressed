@@ -29,7 +29,7 @@
         });
       });
     });
-    /*if port set it to listen
+    /*if port, set it to listen
     */
     if (port) server.listen(port);
     return server;

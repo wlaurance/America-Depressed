@@ -9,11 +9,15 @@ class DB
     @port = '5432'
     @user = @opts.dbuser
     if not @opts.pass?
-      i = rl.createInterface process.stdin, process.stdout, null
-      i.question "Password? ", (@pass) =>
+      if process.env.PGPASSWORD?
+        @pass = process.env.PGPASSWORD
         do @resume
-        do i.close
-        do process.stdin.destroy
+      else
+        i = rl.createInterface process.stdin, process.stdout, null
+        i.question "Password? ", (@pass) =>
+          do @resume
+          do i.close
+          do process.stdin.destroy
     else
       @pass = @opts.pass
       do @resume
