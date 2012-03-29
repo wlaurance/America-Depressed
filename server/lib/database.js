@@ -12,20 +12,26 @@
 
   DB = (function() {
 
-    function DB(password) {
+    function DB(opts) {
       this.resolve = __bind(this.resolve, this);
       var i,
         _this = this;
+      winston.info(JSON.stringify(opts));
       this.port = '5432';
-      this.user = 'wslaur';
+      this.user = opts.dbuser;
       i = rl.createInterface(process.stdin, process.stdout, null);
       i.question("Password? ", function(pass) {
         _this.pass = pass;
-        return _this.resolve('bg6.cs.wm.edu', function() {
+        if (opts.dbhost !== 'localhost') {
+          _this.resolve(opts.dbhost, function() {
+            return _this.connect();
+          });
+        } else {
+          _this.host = opts.dbhost;
           _this.connect();
-          i.close();
-          return process.stdin.destroy();
-        });
+        }
+        i.close();
+        return process.stdin.destroy();
       });
     }
 

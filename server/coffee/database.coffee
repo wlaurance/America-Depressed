@@ -4,15 +4,20 @@ dns = require 'dns'
 rl = require 'readline'
 
 class DB
-  constructor:(password)->
+  constructor:(opts)->
+    winston.info JSON.stringify opts
     @port = '5432'
-    @user = 'wslaur'
+    @user = opts.dbuser
     i = rl.createInterface process.stdin, process.stdout, null
     i.question "Password? ", (@pass) =>
-      @resolve 'bg6.cs.wm.edu', =>
+      if opts.dbhost isnt 'localhost'
+        @resolve opts.dbhost, =>
+          do @connect
+      else
+        @host = opts.dbhost
         do @connect
-        do i.close
-        do process.stdin.destroy
+      do i.close
+      do process.stdin.destroy
 
   connect:()->
     @connString = 'tcp://' + @user + ':' + @pass + '@' + @host + '/postgres'
