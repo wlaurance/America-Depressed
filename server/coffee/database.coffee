@@ -17,9 +17,10 @@ class DB
   connect:()->
     @connString = 'tcp://' + @user + ':' + @pass + '@' + @host + '/postgres'
     winston.info @connString
-    pg.connect @connString, (err, @client)=>
+    pg.connect @connString, (err, client)=>
       throw err if err
-      winston.info JSON.stringify @client
+      @connection = client
+      winston.info 'Connected to db'
 
   resolve:(hostname, cb) =>
     dns.resolve4 hostname, (err, adds)=>

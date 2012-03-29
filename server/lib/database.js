@@ -34,9 +34,9 @@
       this.connString = 'tcp://' + this.user + ':' + this.pass + '@' + this.host + '/postgres';
       winston.info(this.connString);
       return pg.connect(this.connString, function(err, client) {
-        _this.client = client;
         if (err) throw err;
-        return winston.info(JSON.stringify(_this.client));
+        _this.connection = client;
+        return winston.info('Connected to db');
       });
     };
 
