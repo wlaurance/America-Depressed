@@ -1,30 +1,41 @@
-journey = require("journey")
+journey = require "journey"
+auth = require './auth'
+profile = require './profile'
+
 exports.createRouter = (db)->
+  auth = new auth db
+  profile = new profile db
   router = new (journey.Router)(
     strict: false
     strictUrls: false
     api: "basic"
   )
+  router.path /\/login/, ->
+    @post().bind (res, params) ->
+      if not params.username or not params.password
+        res.send 200, {} ,
+          error_message: "Requires a username and password"
+      else
+        auth.login params.username, params.password, (sessionid)->
+          if sessionid isnt 'blah'
+            res.send 200, {},
+              token: sessionid
+          else
+            res.send 200, {},
+              error_message:"Wrong username or password"
+
+
   router.path /\/profile/, ->
-    @get().bind (res) ->
-      res.send 501, {},
-        action: "list"
+    @get().bind (res, params) ->
+      auth.check params.sessionid, (username)->
+        if username isnt false
+          profile.get username
+          res.send 200, {},
+            profile: "hdhf"
+        else
+          res.send 200, {},
+            error_message:"You are not logged in"
 
-    @get(/\/([\w|\d|\-|\_]+)/).bind (res, id) ->
-      res.send 501, {},
-        action: "show"
-
-    @post().bind (res, bookmark) ->
-      res.send 501, {},
-        action: "create"
-
-    @put(/\/([\w|\d|\-|\_]+)/).bind (res, profile) ->
-      res.send 501, {},
-        action: "update"
-
-    @del(/\/([\w|\d|\-|\_]+)/).bind (res, id) ->
-      res.send 501, {},
-        action: "delete"
 
   router.path /\/time/, ->
     @get().bind (res) ->

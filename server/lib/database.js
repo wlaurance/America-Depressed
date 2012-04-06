@@ -43,7 +43,7 @@
 
     DB.prototype.connect = function() {
       var _this = this;
-      this.connString = 'tcp://' + this.user + ':' + this.pass + '@' + this.host + '/postgres';
+      this.connString = 'tcp://' + this.user + ':' + this.pass + '@' + this.host + '/americadepressed';
       winston.info(this.connString);
       return pg.connect(this.connString, function(err, client) {
         if (err) throw err;

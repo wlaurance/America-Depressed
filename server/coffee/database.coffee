@@ -23,7 +23,7 @@ class DB
       do @resume
 
   connect:()=>
-    @connString = 'tcp://' + @user + ':' + @pass + '@' + @host + '/postgres'
+    @connString = 'tcp://' + @user + ':' + @pass + '@' + @host + '/americadepressed'
     winston.info @connString
     pg.connect @connString, (err, client)=>
       throw err if err

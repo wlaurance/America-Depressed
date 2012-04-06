@@ -1,39 +1,55 @@
 (function() {
-  var journey;
+  var auth, journey, profile;
 
   journey = require("journey");
 
+  auth = require('./auth');
+
+  profile = require('./profile');
+
   exports.createRouter = function(db) {
     var router;
+    auth = new auth(db);
+    profile = new profile(db);
     router = new journey.Router({
       strict: false,
       strictUrls: false,
       api: "basic"
     });
+    router.path(/\/login/, function() {
+      return this.post().bind(function(res, params) {
+        if (!params.username || !params.password) {
+          return res.send(200, {}, {
+            error_message: "Requires a username and password"
+          });
+        } else {
+          return auth.login(params.username, params.password, function(sessionid) {
+            if (sessionid !== 'blah') {
+              return res.send(200, {}, {
+                token: sessionid
+              });
+            } else {
+              return res.send(200, {}, {
+                error_message: "Wrong username or password"
+              });
+            }
+          });
+        }
+      });
+    });
     router.path(/\/profile/, function() {
-      this.get().bind(function(res) {
-        return res.send(501, {}, {
-          action: "list"
-        });
-      });
-      this.get(/\/([\w|\d|\-|\_]+)/).bind(function(res, id) {
-        return res.send(501, {}, {
-          action: "show"
-        });
-      });
-      this.post().bind(function(res, bookmark) {
-        return res.send(501, {}, {
-          action: "create"
-        });
-      });
-      this.put(/\/([\w|\d|\-|\_]+)/).bind(function(res, profile) {
-        return res.send(501, {}, {
-          action: "update"
-        });
-      });
-      return this.del(/\/([\w|\d|\-|\_]+)/).bind(function(res, id) {
-        return res.send(501, {}, {
-          action: "delete"
+      return this.get().bind(function(res, params) {
+        return auth.check(params.sessionid, function(username) {
+          if (username !== false) {
+            profile.get(username);
+            return res.send(200, {}, {
+              profile: "hdhf"
+            });
+          } else {
+            return res.send(200, {}, {
+              error_message: "You are not logged in"
+            });
+          }
         });
       });
     });
