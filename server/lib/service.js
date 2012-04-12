@@ -1,16 +1,21 @@
 (function() {
-  var auth, journey, profile;
+  var account, auth, journey, notLoggedin, profile, winston;
 
   journey = require("journey");
+
+  winston = require('winston');
 
   auth = require('./auth');
 
   profile = require('./profile');
 
+  account = require('./account');
+
   exports.createRouter = function(db) {
     var router;
     auth = new auth(db);
     profile = new profile(db);
+    account = new account(db);
     router = new journey.Router({
       strict: false,
       strictUrls: false,
@@ -40,15 +45,14 @@
     router.path(/\/profile/, function() {
       return this.get().bind(function(res, params) {
         return auth.check(params.sessionid, function(username) {
-          if (username !== false) {
-            profile.get(username);
-            return res.send(200, {}, {
-              profile: "hdhf"
+          if (username) {
+            return profile.get(username, function(p) {
+              return res.send(200, {}, {
+                profile: p
+              });
             });
           } else {
-            return res.send(200, {}, {
-              error_message: "You are not logged in"
-            });
+            return notLoggedin(res);
           }
         });
       });
@@ -62,7 +66,29 @@
         });
       });
     });
+    router.path(/\/account/, function() {
+      return this.post().bind(function(res, params) {
+        return auth.check(params.sessionid, function(username) {
+          winston.info(username);
+          if (username) {
+            return account.get(username, function(a) {
+              return res.send(200, {}, {
+                account: a
+              });
+            });
+          } else {
+            return notLoggedin(res);
+          }
+        });
+      });
+    });
     return router;
+  };
+
+  notLoggedin = function(res) {
+    return res.send(200, {}, {
+      error_message: "You are not logged in"
+    });
   };
 
 }).call(this);

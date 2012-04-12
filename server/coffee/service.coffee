@@ -1,10 +1,15 @@
 journey = require "journey"
+winston = require 'winston'
 auth = require './auth'
 profile = require './profile'
+account = require './account'
+#billing = require './billing'
+
 
 exports.createRouter = (db)->
   auth = new auth db
   profile = new profile db
+  account = new account db
   router = new (journey.Router)(
     strict: false
     strictUrls: false
@@ -28,14 +33,12 @@ exports.createRouter = (db)->
   router.path /\/profile/, ->
     @get().bind (res, params) ->
       auth.check params.sessionid, (username)->
-        if username isnt false
-          profile.get username
-          res.send 200, {},
-            profile: "hdhf"
+        if username
+          profile.get username, (p)->
+            res.send 200, {}
+              profile: p
         else
-          res.send 200, {},
-            error_message:"You are not logged in"
-
+          notLoggedin res
 
   router.path /\/time/, ->
     @get().bind (res) ->
@@ -44,4 +47,21 @@ exports.createRouter = (db)->
           hello: result.rows[0].when
 
 
+  router.path /\/account/, ->
+    @post().bind (res,params)->
+      auth.check params.sessionid, (username)->
+        winston.info username
+        if username
+          account.get username, (a)->
+            res.send 200, {},
+              account:a
+        else
+          notLoggedin res
   router
+
+
+notLoggedin = (res)->
+  res.send 200, {},
+    error_message:"You are not logged in"
+
+

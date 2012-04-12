@@ -38,16 +38,13 @@
       h = this.hash();
       h.update(info.password + info.username + (new Date).toString(), 'utf-8');
       sid = h.digest('hex');
-      this.sessionids[sid] = sid;
+      this.sessionids[sid] = info.username;
       return sid;
     };
 
-    Authentication.prototype.check = function(sessionid) {
-      if (this.sessionids[sessionid] != null) {
-        return this.sessionids[sessionid];
-      } else {
-        return false;
-      }
+    Authentication.prototype.check = function(sessionid, cb) {
+      winston.info(sessionid);
+      return cb(this.sessionids[sessionid]);
     };
 
     Authentication.prototype.hash = function() {

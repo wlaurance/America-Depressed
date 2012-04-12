@@ -2,7 +2,7 @@ winston = require 'winston'
 
 class Profile
   constructor:(@db)->
-    @dbname = "testusers"
+    @dbname = "customer"
 
   get:(username, cb)->
     @db.query "select * from " + @dbname + " where username='" + username +"'", (result)->

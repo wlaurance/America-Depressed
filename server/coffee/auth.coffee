@@ -22,14 +22,12 @@ class Authentication
     h = do @hash
     h.update (info.password + info.username + do (new Date).toString), 'utf-8'
     sid = h.digest 'hex'
-    @sessionids[sid] = sid
+    @sessionids[sid] = info.username
     sid
 
-  check: (sessionid)->
-    if @sessionids[sessionid]?
-      return @sessionids[sessionid]
-    else
-      return false
+  check: (sessionid, cb)->
+    winston.info sessionid
+    cb @sessionids[sessionid]
 
   hash:()->
     hash = crypto.createHash 'sha1'

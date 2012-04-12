@@ -7,7 +7,7 @@
 
     function Profile(db) {
       this.db = db;
-      this.dbname = "testusers";
+      this.dbname = "customer";
     }
 
     Profile.prototype.get = function(username, cb) {
