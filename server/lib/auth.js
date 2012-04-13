@@ -7,9 +7,9 @@
 
   Authentication = (function() {
 
-    function Authentication(db) {
+    function Authentication(db, dbname) {
       this.db = db;
-      this.dbname = 'testlogin';
+      this.dbname = dbname != null ? dbname : 'online_account';
       this.sessionids = {};
     }
 

@@ -1,8 +1,7 @@
 winston = require 'winston'
 crypto = require 'crypto'
 class Authentication
-  constructor: (@db)->
-    @dbname = 'testlogin'
+  constructor: (@db, @dbname = 'online_account')->
     @sessionids = {}
   login: (user, pass, cb)->
     @db.query 'select * from ' + @dbname + " where username = '"+user+"'", (result) =>

@@ -1,5 +1,7 @@
 (function() {
-  var Account;
+  var Account, billing;
+
+  billing = require('./billing');
 
   Account = (function() {
 
@@ -13,6 +15,14 @@
         return cb(result.rows[0]);
       });
     };
+
+    Account.prototype.postCharge = function(account_number, amount, cb) {};
+
+    Account.prototype.postPayment = function(account_number, amount, cb) {};
+
+    Account.prototype.applyInterest = function(account_number, interest, cb) {};
+
+    Account.prototype.getBilling = function(account_number, forwhen, cb) {};
 
     return Account;
 

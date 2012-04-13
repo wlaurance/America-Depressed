@@ -1,5 +1,5 @@
 (function() {
-  var account, auth, journey, notLoggedin, profile, winston;
+  var account, admin, auth, journey, needsCredentials, notLoggedin, profile, winston;
 
   journey = require("journey");
 
@@ -11,11 +11,14 @@
 
   account = require('./account');
 
+  admin = require('./admin');
+
   exports.createRouter = function(db) {
     var router;
     auth = new auth(db);
     profile = new profile(db);
     account = new account(db);
+    admin = new admin(db);
     router = new journey.Router({
       strict: false,
       strictUrls: false,
@@ -24,9 +27,7 @@
     router.path(/\/login/, function() {
       return this.post().bind(function(res, params) {
         if (!params.username || !params.password) {
-          return res.send(200, {}, {
-            error_message: "Requires a username and password"
-          });
+          return needsCredentials(res);
         } else {
           return auth.login(params.username, params.password, function(sessionid) {
             if (sessionid !== 'blah') {
@@ -34,9 +35,7 @@
                 token: sessionid
               });
             } else {
-              return res.send(200, {}, {
-                error_message: "Wrong username or password"
-              });
+              return notLoggedin(res);
             }
           });
         }
@@ -82,7 +81,27 @@
         });
       });
     });
+    router.path(/\/admin/, function() {
+      return this.post().bind(function(res, params) {
+        if (!params.username || !params.password) needsCredentials(res);
+        return admin.auth(params.username, params.password, function(adminsession) {
+          if (adminsession) {
+            return res.send(200, {}, {
+              admintoken: adminsession
+            });
+          } else {
+            return needsCredentials(res);
+          }
+        });
+      });
+    });
     return router;
+  };
+
+  needsCredentials = function(res) {
+    return res.send(200, {}, {
+      error_message: "Requires a username and password"
+    });
   };
 
   notLoggedin = function(res) {

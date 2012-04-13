@@ -3,13 +3,13 @@ winston = require 'winston'
 auth = require './auth'
 profile = require './profile'
 account = require './account'
-#billing = require './billing'
-
+admin = require './admin'
 
 exports.createRouter = (db)->
   auth = new auth db
   profile = new profile db
   account = new account db
+  admin = new admin db
   router = new (journey.Router)(
     strict: false
     strictUrls: false
@@ -18,17 +18,14 @@ exports.createRouter = (db)->
   router.path /\/login/, ->
     @post().bind (res, params) ->
       if not params.username or not params.password
-        res.send 200, {} ,
-          error_message: "Requires a username and password"
+        needsCredentials res
       else
         auth.login params.username, params.password, (sessionid)->
           if sessionid isnt 'blah'
             res.send 200, {},
               token: sessionid
           else
-            res.send 200, {},
-              error_message:"Wrong username or password"
-
+            notLoggedin res
 
   router.path /\/profile/, ->
     @get().bind (res, params) ->
@@ -57,8 +54,23 @@ exports.createRouter = (db)->
               account:a
         else
           notLoggedin res
+
+  router.path /\/admin/, ->
+    @post().bind (res,params)->
+      if not params.username or not params.password
+        needsCredentials res
+      admin.auth params.username, params.password, (adminsession)->
+        if adminsession
+          res.send 200, {},
+            admintoken: adminsession
+        else
+          needsCredentials res
   router
 
+
+needsCredentials = (res)->
+  res.send 200, {},
+    error_message:"Requires a username and password"
 
 notLoggedin = (res)->
   res.send 200, {},
