@@ -5,8 +5,8 @@ class Profile
     @dbname = "customer"
 
   get:(username, cb)->
-    @db.query "select * from " + @dbname + " where username='" + username +"'", (result)->
-      if result.rows > 0
+    @db.query "select * from " + @dbname + " where ssn='" + username +"'", (result)->
+      if result.rows.length > 0
         cb result.rows[0]
       else
         cb false
