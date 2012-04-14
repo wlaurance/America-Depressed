@@ -1,9 +1,6 @@
 <?php
 
 $url = 'http://bg6:8000';
-echo getTime();
-$profile =  login('320114393', 'password123');
-var_dump($profile); 
 function getTime() 
 {
   global $url;
@@ -41,6 +38,19 @@ function getProfile($username)
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   $result = curl_exec($ch);
   curl_close($ch);
+  return json_decode($result);
+}
+
+function logout()
+{
+  global $url;
+  $route = $url . '/profile/logout';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route . '?sessionid=' . $_SESSION['token']);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  unset($_SESSION['token']);
   return json_decode($result);
 }
 ?>

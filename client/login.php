@@ -1,9 +1,28 @@
+<?php
+  session_start();
+  require_once('lib/api.php');
+  if ($_SERVER["REQUEST_METHOD"] == 'POST')
+  {
+    if ($_POST['username'] != '')
+    {
+      $_SESSION['profile'] = login($_POST['username'], $_POST['password']);
+      header('Location: acctinfo.php');
+    }
+  } 
+  else
+  {
+    makeForm();
+  }
+
+function makeForm()
+  {
+?>
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/login.css" />
 		<title>America Depressed</title>
 	</head>
-	
+
 	<body>
 		<center>
 		<div class="headerimage">
@@ -20,9 +39,9 @@
 				Log In to Your Account
 				<br/>
 				<br/>
-				<form method="POST" action="http://YOUR_DOMAIN_HERE:81/login/login.php">
+        <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 					Username: <input type="text" name="username" size="25" /><br />
-					Password: <input type="password" name="passwort" size="25" /><br />
+					Password: <input type="password" name="password" size="25" /><br />
 					<p><input type="submit" value="Login" /><input type="submit" value="Sign Up" />
 					</p>
 				</form>
@@ -31,5 +50,5 @@
 		</div>
 	
 		</center>
-	</body>
-</html>
+  </body>
+</html><?php } ?>

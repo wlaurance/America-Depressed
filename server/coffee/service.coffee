@@ -30,7 +30,7 @@ exports.createRouter = (db)->
   router.path /\/profile/, ->
     @get().bind (res, params) ->
       auth.check params.sessionid, (username)->
-        if username?
+        if username isnt false
           profile.get username, (p)->
             res.send 200, {}
               profile: p

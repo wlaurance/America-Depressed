@@ -44,7 +44,7 @@
     router.path(/\/profile/, function() {
       return this.get().bind(function(res, params) {
         return auth.check(params.sessionid, function(username) {
-          if (username) {
+          if (username !== false) {
             return profile.get(username, function(p) {
               return res.send(200, {}, {
                 profile: p
