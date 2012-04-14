@@ -1,5 +1,5 @@
 (function() {
-  var account, admin, auth, journey, needsCredentials, notLoggedin, profile, winston;
+  var account, admin, auth, journey, needsCredentials, notLoggedin, profile, winston, wrongCreds;
 
   journey = require("journey");
 
@@ -35,14 +35,14 @@
                 token: sessionid
               });
             } else {
-              return notLoggedin(res);
+              return wrongCreds(res);
             }
           });
         }
       });
     });
     router.path(/\/profile/, function() {
-      return this.get().bind(function(res, params) {
+      this.get().bind(function(res, params) {
         return auth.check(params.sessionid, function(username) {
           if (username !== false) {
             return profile.get(username, function(p) {
@@ -53,6 +53,13 @@
           } else {
             return notLoggedin(res);
           }
+        });
+      });
+      return this.get(/\/logout/).bind(function(res, params) {
+        return auth.logout(params.sessionid, function(value) {
+          return res.send(200, {}, {
+            message: 'You have successfully logged out'
+          });
         });
       });
     });
@@ -107,6 +114,12 @@
   notLoggedin = function(res) {
     return res.send(200, {}, {
       error_message: "You are not logged in"
+    });
+  };
+
+  wrongCreds = function(res) {
+    return res.send(200, {}, {
+      error_message: "Incorrect username or password"
     });
   };
 

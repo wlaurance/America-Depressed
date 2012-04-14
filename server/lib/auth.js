@@ -52,6 +52,15 @@
       return hash = crypto.createHash('sha1');
     };
 
+    Authentication.prototype.logout = function(sessionid, cb) {
+      winston.info(JSON.stringify(this.sessionids));
+      if (this.sessionids[sessionid]) {
+        this.sessionids[sessionid] = void 0;
+        winston.info(JSON.stringify(this.sessionids));
+      }
+      return cb();
+    };
+
     return Authentication;
 
   })();

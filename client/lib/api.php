@@ -25,8 +25,12 @@ function login($username, $password)
   $result = curl_exec($ch);
   curl_close($ch);
   $sessionid = json_decode($result);
-  $_SESSION['token'] = $sessionid->{'token'};
-  return getProfile($username);
+  if (isset($sessionid->{'error_message'}))
+    return $sessionid;
+  else {
+    $_SESSION['token'] = $sessionid->{'token'};
+    return getProfile($username);
+  }
 }
 
 function getProfile($username)

@@ -25,7 +25,7 @@ exports.createRouter = (db)->
             res.send 200, {},
               token: sessionid
           else
-            notLoggedin res
+            wrongCreds res
 
   router.path /\/profile/, ->
     @get().bind (res, params) ->
@@ -36,6 +36,11 @@ exports.createRouter = (db)->
               profile: p
         else
           notLoggedin res
+
+    @get(/\/logout/).bind (res, params) ->
+      auth.logout params.sessionid, (value)->
+        res.send 200, {}
+          message:'You have successfully logged out'
 
   router.path /\/time/, ->
     @get().bind (res) ->
@@ -75,5 +80,9 @@ needsCredentials = (res)->
 notLoggedin = (res)->
   res.send 200, {},
     error_message:"You are not logged in"
+
+wrongCreds = (res)->
+  res.send 200, {},
+    error_message:"Incorrect username or password"
 
 

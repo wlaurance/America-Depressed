@@ -9,8 +9,7 @@ else
    {
      $profile = $_SESSION['profile'];
      $profile = $profile->{'profile'};
-     $account = 
-     var_dump($profile);
+     $account = ''; 
 ?>
 <html>
 	<head>

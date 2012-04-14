@@ -3,10 +3,18 @@
   require_once('lib/api.php');
   if ($_SERVER["REQUEST_METHOD"] == 'POST')
   {
-    if ($_POST['username'] != '')
+    if ($_POST['username'] != '' && $_POST['password'] != '')
     {
-      $_SESSION['profile'] = login($_POST['username'], $_POST['password']);
-      header('Location: acctinfo.php');
+      $profile = login($_POST['username'], $_POST['password']);
+      var_dump($profile);
+      if (isset($profile->{'error_message'}))
+        makeForm($profile->{'error_message'});
+      else {
+        $_SESSION['profile'] = $profile;
+        header('Location: acctinfo.php');
+      }
+    } else {
+      makeForm('Requires both a username and password.');
     }
   } 
   else
@@ -14,7 +22,7 @@
     makeForm();
   }
 
-function makeForm()
+function makeForm($errors = '')
   {
 ?>
 <html>
@@ -44,7 +52,13 @@ function makeForm()
 					Password: <input type="password" name="password" size="25" /><br />
 					<p><input type="submit" value="Login" /><input type="submit" value="Sign Up" />
 					</p>
-				</form>
+        </form>
+        <?php if($errors != ''){ ?>
+          <div class="errors">
+          <?php echo $errors; ?>
+          </div>
+        <?php } ?>
+        
 			</div>
 			<br/>
 		</div>

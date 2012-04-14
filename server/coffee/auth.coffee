@@ -31,5 +31,12 @@ class Authentication
   hash:()->
     hash = crypto.createHash 'sha1'
 
+  logout:(sessionid, cb)->
+    winston.info JSON.stringify @sessionids
+    if @sessionids[sessionid]
+      @sessionids[sessionid] = undefined
+      winston.info JSON.stringify @sessionids
+    do cb
+ 
 
 module.exports = Authentication
