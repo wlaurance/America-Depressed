@@ -73,7 +73,7 @@
       });
     });
     router.path(/\/account/, function() {
-      return this.post().bind(function(res, params) {
+      this.post().bind(function(res, params) {
         return auth.check(params.sessionid, function(username) {
           winston.info(username);
           if (username) {
@@ -81,6 +81,30 @@
               return res.send(200, {}, {
                 account: a
               });
+            });
+          } else {
+            return notLoggedin(res);
+          }
+        });
+      });
+      this.post(/\/payment/).bind(function(res, params) {
+        return auth.check(params.sessionid, function(user) {
+          if (user) {
+            return account.postPayment(params, function(message) {
+              return res.send(200, {}, {
+                message: message
+              });
+            });
+          } else {
+            return notLoggedin(res);
+          }
+        });
+      });
+      return this.post(/\/charge/).bind(function(res, params) {
+        return auth.check(params.sessionid, function(user) {
+          if (user) {
+            return account.postCharge(params, function(message) {
+              return res.send(200, {}, message);
             });
           } else {
             return notLoggedin(res);
