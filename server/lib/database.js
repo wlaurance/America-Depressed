@@ -74,6 +74,7 @@
 
     DB.prototype.query = function(sql, cb) {
       var _this = this;
+      winston.info(sql);
       return pg.connect(this.connString, function(err, client) {
         if (err) throw err;
         return client.query(sql, function(err, result) {

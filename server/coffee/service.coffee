@@ -60,6 +60,24 @@ exports.createRouter = (db)->
         else
           notLoggedin res
 
+    @post(/\/payment/).bind (res, params)->
+      auth.check params.sessionid, (user)->
+        if user
+          account.postPayment params, (message)->
+            res.send 200, {},
+              message:message
+        else
+          notLoggedin res
+
+    @post(/\/charge/).bind (res, params)->
+      auth.check params.sessionid, (user)->
+        if user
+          account.postCharge params, (message)->
+            res.send 200, {},
+              message
+        else
+          notLoggedin res
+
   router.path /\/admin/, ->
     @post().bind (res,params)->
       if not params.username or not params.password
