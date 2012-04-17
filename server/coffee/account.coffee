@@ -5,14 +5,16 @@ class Account
   constructor:(@db)->
     @dbname = 'account_active'
     @chargedb = 'charges'
+    @debtor = 'debtor'
 
-  get:(params, cb)->
-    if params.accountnumber
-      @db.query "select * from " + @dbname + " where account_num_a='" + params.accountnumber + "'" , (result) ->
-        cb result.rows[0]
-
-    else
-      cb null
+  get:(username, cb)->
+    @db.query "select account_num from " + @debtor + " where ssn='" + username + "'", (query)=>
+      accountnumber = query.rows[0].account_num
+      if accountnumber?
+        @db.query "select * from " + @dbname + " where account_num_a='" + accountnumber + "'" , (result) ->
+          cb result.rows[0]
+      else
+        cb null
 
   postCharge:(params, cb)->
     if params.accountnumber

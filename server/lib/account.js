@@ -13,16 +13,22 @@
       this.nextSequence = __bind(this.nextSequence, this);
       this.dbname = 'account_active';
       this.chargedb = 'charges';
+      this.debtor = 'debtor';
     }
 
-    Account.prototype.get = function(params, cb) {
-      if (params.accountnumber) {
-        return this.db.query("select * from " + this.dbname + " where account_num_a='" + params.accountnumber + "'", function(result) {
-          return cb(result.rows[0]);
-        });
-      } else {
-        return cb(null);
-      }
+    Account.prototype.get = function(username, cb) {
+      var _this = this;
+      return this.db.query("select account_num from " + this.debtor + " where ssn='" + username + "'", function(query) {
+        var accountnumber;
+        accountnumber = query.rows[0].account_num;
+        if (accountnumber != null) {
+          return _this.db.query("select * from " + _this.dbname + " where account_num_a='" + accountnumber + "'", function(result) {
+            return cb(result.rows[0]);
+          });
+        } else {
+          return cb(null);
+        }
+      });
     };
 
     Account.prototype.postCharge = function(params, cb) {

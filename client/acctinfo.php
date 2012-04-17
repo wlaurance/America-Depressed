@@ -9,7 +9,9 @@ else
    {
      $profile = $_SESSION['profile'];
      $profile = $profile->{'profile'};
-     $account = ''; 
+     $account = account();
+     $account = $account->{'account'};
+     var_dump($account);
 ?>
 <html>
 	<head>
@@ -57,10 +59,20 @@ else
         <td>Credit Score:</td><td><?php echo $profile->{'credit_score'};?></td>
 				</tr>
 				<tr>
-        <td>Account Number:</td><td><?php echo $accountnumber; ?></td>
+        <td>Account Number:</td><td><?php 
+     if(isset($account->{'account_num_a'}))
+       echo $account->{'account_num_a'};
+     else
+       echo $account->{'account_num_i'};
+     ?></td>
 				</tr>
 				<tr>
-				<td>Active?:</td><td>Y</td>
+        <td>Active?:</td><td><?php 
+        if(isset($account->{'account_num_a'}))
+          echo 'Y';
+        else
+          echo 'N';
+    ?></td>
 				</tr>
 			</table> 
 			</div>
