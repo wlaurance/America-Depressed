@@ -57,4 +57,19 @@ function logout()
   unset($_SESSION['token']);
   return json_decode($result);
 }
+
+function account()
+{
+  global $url;
+  $route = $url . '/account';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, 'sessionid=' . $_SESSION['token']);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  var_dump($result);
+  curl_close($ch);
+  return json_decode($result);
+}
+
 ?>
