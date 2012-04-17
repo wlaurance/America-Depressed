@@ -60,18 +60,21 @@ else
         <td>Account Number:</td><td><?php echo $accountnumber; ?></td>
 				</tr>
 				<tr>
+        <td>Reward Account Number:</td><td>12312312</td>
+				</tr>
+				<tr>
 				<td>Active?:</td><td>Y</td>
 				</tr>
 			</table> 
 			</div>
+			<table border="0">
+			<tr><td><form action="update.php" method="get"><input type="submit" value="Update" /></form></td>
+			<td><form action="payment.php" method="get"><input type="submit" value="Payments" /></form></td>
+			<td><form action="charge.php" method="get"><input type="submit" value="Charges" /></form></td>
+			<td><form action="rewardstore.php" method="get"><input type="submit" value="Reward Store" /></form></td>
+			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			</tr>
 			<br/>
-      <input type="submit" value="Update" />
-      <form action="logout.php" method="get">
-      <input type="submit" value="Log Out" />
-      </form>
-			<br/>
-			<br/>
-			
 		</div>
 		
 		</center>

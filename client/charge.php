@@ -26,7 +26,7 @@
 				Your account balance is: $15959
 			<br/>
 			<br/>
-			<form>
+			<form action="madecharge.php" method="post">
 			<table border="0" class="info">
 				<tr>
         		<td>Charge Date:</td><td><input type="text" name="charge_date" size="25" /></td>
@@ -37,15 +37,20 @@
 				<tr>
         		<td>Location:</td><td><input type="text" name="location" size="25" /></td>
 				</tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
 				<tr>
-				<td><input type="submit" value="Make Charge" /></td>
+				<td><input type="submit" value="Make Charge"/></td>
 				<td><input type="reset" value="Clear"/></td>
 				</tr>
 
-			</div>
 			</table>
 			</form>
-
+			</div>
+			<br/>
+			<br/>
+		</div>
 			
 		</center>
 	</body>

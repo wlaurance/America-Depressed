@@ -27,7 +27,7 @@ function makeForm($errors = '')
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/login.css" />
+		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/acctinfo.css" />
 		<title>America Depressed</title>
 	</head>
 
