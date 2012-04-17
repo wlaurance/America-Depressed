@@ -65,8 +65,10 @@ else
      else
        echo $account->{'account_num_i'};
      ?></td>
-				</tr>
-				<tr>
+        </tr>
+        <td>Reward Account Number:</td><td>12312312</td>
+        </tr>
+        <tr>
         <td>Active?:</td><td><?php 
         if(isset($account->{'account_num_a'}))
           echo 'Y';
