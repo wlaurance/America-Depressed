@@ -33,7 +33,17 @@
           amount = _this.formatMoney(params.amount);
           values = "(" + params.accountnumber + "," + transnum + ",'" + (new Date()).toUTCString() + "','" + amount + "','" + params.location + "')";
           return _this.db.query("insert into " + _this.chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, function(result) {
-            return cb(result.rows[0]);
+            return _this.db.query("select balance from " + _this.dbname + " where account_num_a='" + params.accountnumber + "'", function(result) {
+              var newbalance, oldbalance;
+              oldbalance = _this.deformatMoney(result.rows[0].balance);
+              winston.info(Number(oldbalance) + Number(params.amount));
+              newbalance = Number(oldbalance) + Number(params.amount);
+              newbalance = _this.formatMoney(newbalance);
+              winston.info(newbalance);
+              return _this.db.query("update " + _this.dbname + " set balance='" + newbalance + "' where account_num_a='" + params.accountnumber + "'", function(result) {
+                return cb('charge complete');
+              });
+            });
           });
         });
       } else {
@@ -50,6 +60,12 @@
     Account.prototype.formatMoney = function(a) {
       a = Number(a);
       return '$' + a.toFixed(2);
+    };
+
+    Account.prototype.deformatMoney = function(a) {
+      a = a.replace('$', '');
+      a = a.replace(',', '');
+      return a;
     };
 
     Account.prototype.nextSequence = function(accnum, db, cb) {

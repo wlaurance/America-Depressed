@@ -19,8 +19,16 @@ class Account
       @nextSequence params.accountnumber, @chargedb, (transnum)=>
         amount = @formatMoney params.amount
         values = "("+ params.accountnumber + "," + transnum + ",'" + do (do new Date).toUTCString + "','" + amount + "','" + params.location + "')"
-        @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)->
-          cb result.rows[0]
+        @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)=>
+          @db.query "select balance from " + @dbname + " where account_num_a='" + params.accountnumber + "'", (result)=>
+            oldbalance = @deformatMoney result.rows[0].balance
+            winston.info Number(oldbalance) + Number(params.amount)
+            newbalance = Number(oldbalance) + Number(params.amount)
+            newbalance = @formatMoney newbalance
+            winston.info newbalance
+            @db.query "update " + @dbname + " set balance='" + newbalance + "' where account_num_a='" + params.accountnumber + "'", (result)=>
+              cb 'charge complete'
+
     else
       cb 'Need an accountnumber'
 
@@ -37,6 +45,10 @@ class Account
     a = Number a
     return '$' + a.toFixed 2
 
+  deformatMoney:(a)->
+    a = a.replace '$', ''
+    a = a.replace ',', ''
+    return a
  
   nextSequence:(accnum, db, cb)=>
     if db is @chargedb
