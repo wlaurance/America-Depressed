@@ -5,13 +5,13 @@
   {
     if ($_POST['username'] != '' && $_POST['password'] != '')
     {
-      $profile = login($_POST['username'], $_POST['password']);
+      $profile = adminlogin($_POST['username'], $_POST['password']);
       var_dump($profile);
       if (isset($profile->{'error_message'}))
         makeForm($profile->{'error_message'});
       else {
         $_SESSION['profile'] = $profile;
-        header('Location: acctinfo.php');
+        header('Location: adminhome.php');
       }
     } else {
       makeForm('Requires both a username and password.');
@@ -27,15 +27,9 @@ function makeForm($errors = '')
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/acctinfo.css" />
+		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/admin.css" />
 		<title>America Depressed</title>
 	</head>
-	
-	<script type=text/javascript>
-		function goto(){
-			window.location="http://www.americanexpress.com";
-		}
-	</script>
 
 	<body>
 		<center>
@@ -56,7 +50,7 @@ function makeForm($errors = '')
         <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 					Username: <input type="text" name="username" size="25" /><br />
 					Password: <input type="password" name="password" size="25" /><br />
-					<p><input type="submit" value="Login" /><input type="button" value="Cancel" onclick=goto() />
+					<p><input type="submit" value="Login" /><input type="reset" value="Clear" />
 					</p>
         </form>
         <?php if($errors != ''){ ?>

@@ -65,7 +65,6 @@ else
 			<br/>
 						<table border="0">
 			<td><form action="acctinfo.php" method="get"><input type="submit" value="Home" /></form></td>
-			<td><form action="rewardstore.php" method="get"><input type="submit" value="Reward Store" /></form></td>
 			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 			</tr>
 			</table>
