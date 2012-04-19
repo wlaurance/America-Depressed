@@ -31,7 +31,7 @@
 			</table> 
 			<table border="0">
 			<tr><td>
-			<form action="updatemade.php" method="get"><input type="submit" value="Update" /></form>
+			<form action="acctinfo.php" method="get"><input type="submit" value="Update" /></form>
 			</td></tr>
 			</table>
 			</div>

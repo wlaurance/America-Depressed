@@ -11,6 +11,8 @@ else
      $profile = $profile->{'profile'};
      $account = account();
      $account = $account->{'account'};
+     $type = $_GET["t"];
+     $amount = $_GET["p"];
 ?>
 <html>
 	<head>
@@ -31,29 +33,25 @@ else
 			</div>
 			<br/>
 			<br/>
+
 			<div class="infotable">
+			<h2><?php if($type=="s")
+					echo "Sweepstakes";
+					if ($type=="m")
+						echo "Merchandise"; ?></h2>
+			<br/>
 			<table border="0" class="info">
-				<tr><td><b>Sweepstakes</b></td></tr>
-				<tr><td><a href="list.php?t=s&p=100">100 points</a> </td></tr>
-				<tr><td><a href="list.php?t=s&p=300">300 points</a> </td></tr>
-				<tr><td><b>*********************************************</b></td></tr>	
-				<tr><td><b>Merchandise</b></td></tr>
-				<tr><td><a href="list.php?t=m&p=100">1-100 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=200">101-200 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=300">201-300 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=400">301-400 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=500">401-500 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=600">501-600 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=700">601-700 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=800">701-800 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=900">801-900 points</a> </td></tr>
-				<tr><td><a href="list.php?t=m&p=1000">901-1000 points</a> </td></tr>
+			
+				<?php printcoltitles($type); ?>
+				<?php printrewards($type, $amount); ?>
+
+
 			</table> 
 			</div>
 			<br/>
 			<table border="0"><tr>
 			<td><form action="acctinfo.php" method="get"><input type="submit" value="Home" /></form></td>
-			<td><form action="rewardstore.php" method="get"><input type="submit" value="Reward Store Home" /></form></td>
+			<td><form action="rewardstore.php" method="get"><input type="submit" value="Reward Store" /></form></td>
 			<td><form action="earned.php" method="get"><input type="submit" value="Earned Rewards" /></form></td>
 			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 			</tr>
@@ -65,5 +63,27 @@ else
 	</body>
 </html>
 <?php 
+}
+function printcoltitles($type){
+	if ($type == "s") { ?>
+		<tr><td><b>Name of Reward</b></td><td><b>Cost</b></td><td><b>Current Entries</b></td><td><b>End 					Date</b></td><td></td></tr>
+<?php }
+	else { ?>
+		<tr><td><b>Name of Reward</b></td><td><b>Cost</b></td><td><b>Quantity Remaining</b></td><td></td></tr>
+<?php }
+
+function printrewards($type, $amount){
+	if($type == "s") { ?>
+		<tr><td>This would be a sweep</td><td>Cost</td><td>Entries</td><td>end_date
+		</td><td><form style="margin:0; text-align:center;" action="redeem.php?id=INSERT ID HERE" 
+		method="get"><input type="submit" value="Redeem" /></form></td></tr>
+<?php }
+	else { ?>
+		<tr><td>This would be a merch</td><td>Cost</td><td>Quantity</td><td><form style="margin:0; text-
+		align:center;"action="redeem.php?id=INSERT ID HERE" method="get"><input type="submit" 
+		value="Redeem" /></form></td></tr>
+<?php }
+}
+
 }
 ?>
