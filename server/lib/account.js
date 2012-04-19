@@ -43,23 +43,21 @@
     Account.prototype.postCharge = function(params, cb) {
       var _this = this;
       return this.auth.getUsername(params.sessionid, function(username) {
-        winston.info(username + ' username');
         return _this.getAccount(username, function(accountnumber) {
-          winston.info(accountnumber);
           if (_this.isMoney(params.amount) && params.location !== '') {
             return _this.nextSequence(accountnumber, _this.chargedb, function(transnum) {
               var amount, date, values;
-              winston.info(params.amount);
               amount = params.amount;
-              winston.info(amount);
+              if (Number(amount) <= 0) {
+                cb('negative payment');
+                return;
+              }
               date = _this.transDate(params.charge_date);
               values = "(" + accountnumber + "," + transnum + ",'" + date + "','$" + amount + "'," + params.location + ")";
               return _this.db.query("insert into " + _this.chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, function(result) {
                 return _this.getCurrentBalance(accountnumber, function(oldbalance) {
                   var newbalance;
-                  winston.info(oldbalance);
                   newbalance = Number(oldbalance) + Number(_this.getNumber(amount));
-                  winston.info(newbalance);
                   return _this.updateBalance(newbalance, accountnumber, function(result) {
                     return cb(result);
                   });

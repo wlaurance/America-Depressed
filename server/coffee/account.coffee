@@ -22,21 +22,18 @@ class Account
 
   postCharge:(params, cb)->
     @auth.getUsername params.sessionid, (username)=>
-      winston.info username + ' username'
       @getAccount username, (accountnumber)=>
-        winston.info accountnumber
         if @isMoney(params.amount) and params.location isnt ''
           @nextSequence accountnumber, @chargedb, (transnum)=>
-            winston.info params.amount
             amount = params.amount
-            winston.info amount
+            if Number(amount) <= 0
+              cb 'negative payment'
+              return
             date = @transDate params.charge_date
             values = "("+ accountnumber + "," + transnum + ",'" + date + "','$" + amount + "'," + params.location + ")"
             @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)=>
               @getCurrentBalance accountnumber, (oldbalance)=>
-                winston.info oldbalance
                 newbalance = Number(oldbalance) + Number(@getNumber amount)
-                winston.info newbalance
                 @updateBalance newbalance, accountnumber, (result)=>
                   cb result
         else
