@@ -61,6 +61,14 @@
       return cb();
     };
 
+    Authentication.prototype.getUsername = function(sessionid, cb) {
+      if (this.sessionids[sessionid]) {
+        return cb(this.sessionids[sessionid]);
+      } else {
+        return cb(null);
+      }
+    };
+
     return Authentication;
 
   })();

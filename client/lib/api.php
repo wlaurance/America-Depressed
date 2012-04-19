@@ -67,9 +67,25 @@ function account()
   curl_setopt($ch, CURLOPT_POSTFIELDS, 'sessionid=' . $_SESSION['token']);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   $result = curl_exec($ch);
-  var_dump($result);
   curl_close($ch);
   return json_decode($result);
+}
+
+function makeCharge($post)
+{
+  global $url;
+  $route = $url . '/account/charge';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid=" . $_SESSION['token']. "&date='".$post['date']."'&accountnumber='". $post['accountnumber']."'&amount='".$post['amount']."'&location='".$post['location']."'");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+ 
+
+
+
 }
 
 ?>

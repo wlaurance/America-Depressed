@@ -8,8 +8,9 @@
 
   Account = (function() {
 
-    function Account(db) {
+    function Account(db, auth) {
       this.db = db;
+      this.auth = auth;
       this.nextSequence = __bind(this.nextSequence, this);
       this.dbname = 'account_active';
       this.chargedb = 'charges';
@@ -18,9 +19,7 @@
 
     Account.prototype.get = function(username, cb) {
       var _this = this;
-      return this.db.query("select account_num from " + this.debtor + " where ssn='" + username + "'", function(query) {
-        var accountnumber;
-        accountnumber = query.rows[0].account_num;
+      return this.getAccount(username, function(accountnumber) {
         if (accountnumber != null) {
           return _this.db.query("select * from " + _this.dbname + " where account_num_a='" + accountnumber + "'", function(result) {
             return cb(result.rows[0]);
@@ -31,30 +30,44 @@
       });
     };
 
+    Account.prototype.getAccount = function(ssn, cb) {
+      var _this = this;
+      return this.db.query("select account_num from " + this.debtor + " where ssn='" + ssn + "'", function(query) {
+        return cb(query.rows[0].account_num);
+      });
+    };
+
     Account.prototype.postCharge = function(params, cb) {
       var _this = this;
-      if (params.accountnumber) {
-        return this.nextSequence(params.accountnumber, this.chargedb, function(transnum) {
-          var amount, values;
-          amount = _this.formatMoney(params.amount);
-          values = "(" + params.accountnumber + "," + transnum + ",'" + (new Date()).toUTCString() + "','" + amount + "','" + params.location + "')";
-          return _this.db.query("insert into " + _this.chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, function(result) {
-            return _this.db.query("select balance from " + _this.dbname + " where account_num_a='" + params.accountnumber + "'", function(result) {
-              var newbalance, oldbalance;
-              oldbalance = _this.deformatMoney(result.rows[0].balance);
-              winston.info(Number(oldbalance) + Number(params.amount));
-              newbalance = Number(oldbalance) + Number(params.amount);
-              newbalance = _this.formatMoney(newbalance);
-              winston.info(newbalance);
-              return _this.db.query("update " + _this.dbname + " set balance='" + newbalance + "' where account_num_a='" + params.accountnumber + "'", function(result) {
-                return cb('charge complete');
+      return this.auth.getUsername(params.sessionid, function(username) {
+        winston.info(username + ' username');
+        return _this.getAccount(username, function(accountnumber) {
+          winston.info(accountnumber);
+          if (_this.isMoney(params.amount) && params.location !== '') {
+            return _this.nextSequence(accountnumber, _this.chargedb, function(transnum) {
+              var amount, date, values;
+              amount = _this.formatMoney(params.amount);
+              date = params.date || new Date();
+              values = "(" + accountnumber + "," + transnum + ",'" + date + "','" + amount + "'," + params.location + ")";
+              return _this.db.query("insert into " + _this.chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, function(result) {
+                return _this.db.query("select balance from " + _this.dbname + " where account_num_a='" + accountnumber + "'", function(result) {
+                  var newbalance, oldbalance;
+                  oldbalance = _this.deformatMoney(result.rows[0].balance);
+                  winston.info(Number(oldbalance) + Number(params.amount));
+                  newbalance = Number(oldbalance) + Number(params.amount);
+                  newbalance = _this.formatMoney(newbalance);
+                  winston.info(newbalance);
+                  return _this.db.query("update " + _this.dbname + " set balance='" + newbalance + "' where account_num_a='" + accountnumber + "'", function(result) {
+                    return cb('charge complete');
+                  });
+                });
               });
             });
-          });
+          } else {
+            return cb('error need amount and location');
+          }
         });
-      } else {
-        return cb('Need an accountnumber');
-      }
+      });
     };
 
     Account.prototype.postPayment = function(params, cb) {};
@@ -63,9 +76,21 @@
 
     Account.prototype.getBilling = function(params, cb) {};
 
-    Account.prototype.formatMoney = function(a) {
+    Account.prototype.isMoney = function(input) {
+      var a;
+      a = this.deformatMoney(input);
       a = Number(a);
-      return '$' + a.toFixed(2);
+      if (a !== Number.NaN) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    Account.prototype.formatMoney = function(a) {
+      a = this.deformatMoney(a);
+      a = Number(a);
+      return a.toFixed(2);
     };
 
     Account.prototype.deformatMoney = function(a) {

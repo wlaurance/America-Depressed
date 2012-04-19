@@ -1,4 +1,19 @@
-<html>
+<?php
+session_start();
+require_once('lib/api.php');
+if (isset($_SESSION['token']) && $_SERVER['REQUEST_METHOD'] == 'GET')
+  print_info();
+else if ($_SERVER['REQUEST_METHOD'] == 'POST')
+  makeCharge($_POST);
+else
+  header("Location: login.php");
+ function print_info()
+   {
+     $profile = $_SESSION['profile'];
+     $profile = $profile->{'profile'};
+     $account = account();
+     $account = $account->{'account'};
+?><html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/acctinfo.css" />
 		<title>America Depressed</title>
@@ -21,12 +36,13 @@
 				Make a Charge to Your Account
 				<br/>
 				<br/>
-				Your account number is: 1111111111111111
+        Your account number is: <?php echo $account->{'account_num_a'}; ?>
 				<br/>
-				Your account balance is: $15959
+				Your account balance is: <?php echo $account->{'balance'}; ?>
+
 			<br/>
 			<br/>
-			<form action="madecharge.php" method="post">
+      <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 			<table border="0" class="info">
 				<tr>
         		<td>Charge Date:</td><td><input type="text" name="charge_date" size="25" /></td>
@@ -55,3 +71,5 @@
 		</center>
 	</body>
 </html>
+<?php }
+?>

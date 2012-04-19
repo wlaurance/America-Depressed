@@ -11,7 +11,6 @@ else
      $profile = $profile->{'profile'};
      $account = account();
      $account = $account->{'account'};
-     var_dump($account);
 ?>
 <html>
 	<head>

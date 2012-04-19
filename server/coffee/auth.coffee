@@ -37,6 +37,11 @@ class Authentication
       @sessionids[sessionid] = undefined
       winston.info JSON.stringify @sessionids
     do cb
- 
+
+  getUsername:(sessionid, cb)->
+    if @sessionids[sessionid]
+      cb @sessionids[sessionid]
+    else
+      cb null
 
 module.exports = Authentication

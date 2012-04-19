@@ -2,37 +2,45 @@ billing = require './billing'
 winston = require 'winston'
 
 class Account
-  constructor:(@db)->
+  constructor:(@db, @auth)->
     @dbname = 'account_active'
     @chargedb = 'charges'
     @debtor = 'debtor'
 
   get:(username, cb)->
-    @db.query "select account_num from " + @debtor + " where ssn='" + username + "'", (query)=>
-      accountnumber = query.rows[0].account_num
+    @getAccount username, (accountnumber)=>
       if accountnumber?
         @db.query "select * from " + @dbname + " where account_num_a='" + accountnumber + "'" , (result) ->
           cb result.rows[0]
       else
         cb null
+  
+  getAccount:(ssn, cb)->
+    @db.query "select account_num from " + @debtor + " where ssn='" + ssn + "'", (query)=>
+      cb query.rows[0].account_num
 
   postCharge:(params, cb)->
-    if params.accountnumber
-      @nextSequence params.accountnumber, @chargedb, (transnum)=>
-        amount = @formatMoney params.amount
-        values = "("+ params.accountnumber + "," + transnum + ",'" + do (do new Date).toUTCString + "','" + amount + "','" + params.location + "')"
-        @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)=>
-          @db.query "select balance from " + @dbname + " where account_num_a='" + params.accountnumber + "'", (result)=>
-            oldbalance = @deformatMoney result.rows[0].balance
-            winston.info Number(oldbalance) + Number(params.amount)
-            newbalance = Number(oldbalance) + Number(params.amount)
-            newbalance = @formatMoney newbalance
-            winston.info newbalance
-            @db.query "update " + @dbname + " set balance='" + newbalance + "' where account_num_a='" + params.accountnumber + "'", (result)=>
-              cb 'charge complete'
+    @auth.getUsername params.sessionid, (username)=>
+      winston.info username + ' username'
+      @getAccount username, (accountnumber)=>
+        winston.info accountnumber
+        if @isMoney(params.amount) and params.location isnt ''
+          @nextSequence accountnumber, @chargedb, (transnum)=>
+            amount = @formatMoney params.amount
+            date = params.date || do new Date
+            values = "("+ accountnumber + "," + transnum + ",'" + date + "','" + amount + "'," + params.location + ")"
+            @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)=>
+              @db.query "select balance from " + @dbname + " where account_num_a='" + accountnumber + "'", (result)=>
+                oldbalance = @deformatMoney result.rows[0].balance
+                winston.info Number(oldbalance) + Number(params.amount)
+                newbalance = Number(oldbalance) + Number(params.amount)
+                newbalance = @formatMoney newbalance
+                winston.info newbalance
+                @db.query "update " + @dbname + " set balance='" + newbalance + "' where account_num_a='" + accountnumber + "'", (result)=>
+                  cb 'charge complete'
 
-    else
-      cb 'Need an accountnumber'
+        else
+          cb 'error need amount and location'
 
   postPayment:(params, cb)->
 
@@ -43,9 +51,20 @@ class Account
   getBilling:(params, cb)->
 
 
-  formatMoney:(a)->
+
+  isMoney:(input)->
+    a = @deformatMoney input
     a = Number a
-    return '$' + a.toFixed 2
+    if a isnt Number.NaN
+      return true
+    else
+      return false
+
+
+  formatMoney:(a)->
+    a = @deformatMoney a
+    a = Number a
+    return a.toFixed 2
 
   deformatMoney:(a)->
     a = a.replace '$', ''
