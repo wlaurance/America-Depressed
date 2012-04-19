@@ -77,6 +77,7 @@ else
 				</tr>
 			</table> 
 			</div>
+			<br/>
 			<table border="0">
 			<tr><td><form action="update.php" method="get"><input type="submit" value="Update" /></form></td>
 			<td><form action="payment.php" method="get"><input type="submit" value="Payments" /></form></td>
@@ -84,7 +85,8 @@ else
 			<td><form action="rewardstore.php" method="get"><input type="submit" value="Reward Store" /></form></td>
 			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 			</tr>
-			<br/>
+			</table>
+
 		</div>
 		
 		</center>

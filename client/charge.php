@@ -3,8 +3,10 @@ session_start();
 require_once('lib/api.php');
 if (isset($_SESSION['token']) && $_SERVER['REQUEST_METHOD'] == 'GET')
   print_info();
-else if ($_SERVER['REQUEST_METHOD'] == 'POST')
+else if ($_SERVER['REQUEST_METHOD'] == 'POST'){
   makeCharge($_POST);
+  header("Location: acctinfo.php");
+}
 else
   header("Location: login.php");
  function print_info()
@@ -36,10 +38,9 @@ else
 				Make a Charge to Your Account
 				<br/>
 				<br/>
-        Your account number is: <?php echo $account->{'account_num_a'}; ?>
+        		Your account number is: <?php echo $account->{'account_num_a'}; ?>
 				<br/>
 				Your account balance is: <?php echo $account->{'balance'}; ?>
-
 			<br/>
 			<br/>
       <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
@@ -65,6 +66,12 @@ else
 			</form>
 			</div>
 			<br/>
+			<table border="0">
+			<td><form action="acctinfo.php" method="get"><input type="submit" value="Home" /></form></td>
+			<td><form action="rewardstore.php" method="get"><input type="submit" value="Reward Store" /></form></td>
+			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			</tr>
+			</table>
 			<br/>
 		</div>
 			
