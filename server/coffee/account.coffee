@@ -5,6 +5,7 @@ class Account
   constructor:(@db, @auth)->
     @dbname = 'account_active'
     @chargedb = 'charges'
+    @paymentdb = 'payments'
     @debtor = 'debtor'
 
   get:(username, cb)->
@@ -29,21 +30,34 @@ class Account
             winston.info params.amount
             amount = params.amount
             winston.info amount
-            date = do new Date
+            date = @transDate params.charge_date
             values = "("+ accountnumber + "," + transnum + ",'" + date + "','$" + amount + "'," + params.location + ")"
             @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)=>
-              @db.query "select balance from " + @dbname + " where account_num_a='" + accountnumber + "'", (result)=>
-                oldbalance = @getNumber result.rows[0].balance
+              @getCurrentBalance accountnumber, (oldbalance)=>
                 winston.info oldbalance
                 newbalance = Number(oldbalance) + Number(@getNumber amount)
                 winston.info newbalance
-                @db.query "update " + @dbname + " set balance='$" + newbalance + "' where account_num_a='" + accountnumber + "'", (result)=>
-                  cb 'charge complete'
-
+                @updateBalance newbalance, accountnumber, (result)=>
+                  cb result
         else
           cb 'error need amount and location'
 
   postPayment:(params, cb)->
+    @auth.getUsername params.sessionid, (username)=>
+      @getAccount username, (accountnumber)=>
+        if @isMoney(params.amount)
+          @nextSequence accountnumber, @paymentdb, (transnum)=>
+            amount = params.amount
+            date = @transDate params.charge_date
+            values = "(" + accountnumber + "," + transnum + ",'" + date + "','$" + amount + "')"
+            @db.query "insert into " + @paymentdb + " (account_num, payment_num, payment_date, payment_amount) VALUES " + values, (resutl)=>
+              @getCurrentBalance accountnumber, (oldbalance)=>
+                newbalance = Number(oldbalance) - Number(@getNumber amount)
+                @updateBalance newbalance, accountnumber, (result)=>
+                  cb result
+
+        else
+          cb 'error need amount'
 
 
   applyInterest:(params, cb)->
@@ -51,6 +65,22 @@ class Account
 
   getBilling:(params, cb)->
 
+
+  getCurrentBalance:(accountnumber, cb)=>
+    @db.query "select balance from " + @dbname + " where account_num_a='" + accountnumber + "'", (result)=>
+      oldbalance = @getNumber result.rows[0].balance
+      cb oldbalance
+
+
+  updateBalance:(newbalance, accountnumber, cb)=>
+    @db.query "update " + @dbname + " set balance='$" + newbalance + "' where account_num_a='" + accountnumber + "'", (result)=>
+      cb 'success'
+
+  transDate:(date)->
+    if date isnt undefined
+      return new Date date
+    else
+      return new Date
 
 
   isMoney:(input)->
