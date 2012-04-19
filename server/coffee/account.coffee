@@ -5,6 +5,7 @@ class Account
   constructor:(@db, @auth)->
     @dbname = 'account_active'
     @chargedb = 'charges'
+    @paymentdb = 'payments'
     @debtor = 'debtor'
 
   get:(username, cb)->
@@ -21,28 +22,39 @@ class Account
 
   postCharge:(params, cb)->
     @auth.getUsername params.sessionid, (username)=>
-      winston.info username + ' username'
       @getAccount username, (accountnumber)=>
-        winston.info accountnumber
         if @isMoney(params.amount) and params.location isnt ''
           @nextSequence accountnumber, @chargedb, (transnum)=>
-            amount = @formatMoney params.amount
-            date = params.date || do new Date
-            values = "("+ accountnumber + "," + transnum + ",'" + date + "','" + amount + "'," + params.location + ")"
+            amount = params.amount
+            if Number(amount) <= 0
+              cb 'negative payment'
+              return
+            date = @transDate params.charge_date
+            values = "("+ accountnumber + "," + transnum + ",'" + date + "','$" + amount + "'," + params.location + ")"
             @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)=>
-              @db.query "select balance from " + @dbname + " where account_num_a='" + accountnumber + "'", (result)=>
-                oldbalance = @deformatMoney result.rows[0].balance
-                winston.info Number(oldbalance) + Number(params.amount)
-                newbalance = Number(oldbalance) + Number(params.amount)
-                newbalance = @formatMoney newbalance
-                winston.info newbalance
-                @db.query "update " + @dbname + " set balance='" + newbalance + "' where account_num_a='" + accountnumber + "'", (result)=>
-                  cb 'charge complete'
-
+              @getCurrentBalance accountnumber, (oldbalance)=>
+                newbalance = Number(oldbalance) + Number(@getNumber amount)
+                @updateBalance newbalance, accountnumber, (result)=>
+                  cb result
         else
           cb 'error need amount and location'
 
   postPayment:(params, cb)->
+    @auth.getUsername params.sessionid, (username)=>
+      @getAccount username, (accountnumber)=>
+        if @isMoney(params.amount)
+          @nextSequence accountnumber, @paymentdb, (transnum)=>
+            amount = params.amount
+            date = @transDate params.charge_date
+            values = "(" + accountnumber + "," + transnum + ",'" + date + "','$" + amount + "')"
+            @db.query "insert into " + @paymentdb + " (account_num, payment_num, payment_date, payment_amount) VALUES " + values, (resutl)=>
+              @getCurrentBalance accountnumber, (oldbalance)=>
+                newbalance = Number(oldbalance) - Number(@getNumber amount)
+                @updateBalance newbalance, accountnumber, (result)=>
+                  cb result
+
+        else
+          cb 'error need amount'
 
 
   applyInterest:(params, cb)->
@@ -51,26 +63,40 @@ class Account
   getBilling:(params, cb)->
 
 
+  getCurrentBalance:(accountnumber, cb)=>
+    @db.query "select balance from " + @dbname + " where account_num_a='" + accountnumber + "'", (result)=>
+      oldbalance = @getNumber result.rows[0].balance
+      cb oldbalance
+
+
+  updateBalance:(newbalance, accountnumber, cb)=>
+    @db.query "update " + @dbname + " set balance='$" + newbalance + "' where account_num_a='" + accountnumber + "'", (result)=>
+      cb 'success'
+
+  transDate:(date)->
+    if date isnt undefined
+      return new Date date
+    else
+      return new Date
+
 
   isMoney:(input)->
-    a = @deformatMoney input
-    a = Number a
+    a = Number input
     if a isnt Number.NaN
       return true
     else
       return false
 
-
-  formatMoney:(a)->
-    a = @deformatMoney a
+  getNumber:(input)->
+    winston.info 'input ' + input
+    a = input.replace '$', ""
+    winston.info 'a1 ' + a
+    a = a.replace ',', ""
+    a = a.replace "'", ""
+    winston.info 'a2 ' + a
     a = Number a
-    return a.toFixed 2
+    a.toFixed 2
 
-  deformatMoney:(a)->
-    a = a.replace '$', ''
-    a = a.replace ',', ''
-    return a
- 
   nextSequence:(accnum, db, cb)=>
     if db is @chargedb
       column = 'charge_num'
