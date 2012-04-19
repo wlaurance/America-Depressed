@@ -26,17 +26,18 @@ class Account
         winston.info accountnumber
         if @isMoney(params.amount) and params.location isnt ''
           @nextSequence accountnumber, @chargedb, (transnum)=>
-            amount = @formatMoney params.amount
-            date = params.date || do new Date
-            values = "("+ accountnumber + "," + transnum + ",'" + date + "','" + amount + "'," + params.location + ")"
+            winston.info params.amount
+            amount = params.amount
+            winston.info amount
+            date = do new Date
+            values = "("+ accountnumber + "," + transnum + ",'" + date + "','$" + amount + "'," + params.location + ")"
             @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)=>
               @db.query "select balance from " + @dbname + " where account_num_a='" + accountnumber + "'", (result)=>
-                oldbalance = @deformatMoney result.rows[0].balance
-                winston.info Number(oldbalance) + Number(params.amount)
-                newbalance = Number(oldbalance) + Number(params.amount)
-                newbalance = @formatMoney newbalance
+                oldbalance = @getNumber result.rows[0].balance
+                winston.info oldbalance
+                newbalance = Number(oldbalance) + Number(@getNumber amount)
                 winston.info newbalance
-                @db.query "update " + @dbname + " set balance='" + newbalance + "' where account_num_a='" + accountnumber + "'", (result)=>
+                @db.query "update " + @dbname + " set balance='$" + newbalance + "' where account_num_a='" + accountnumber + "'", (result)=>
                   cb 'charge complete'
 
         else
@@ -53,24 +54,22 @@ class Account
 
 
   isMoney:(input)->
-    a = @deformatMoney input
-    a = Number a
+    a = Number input
     if a isnt Number.NaN
       return true
     else
       return false
 
-
-  formatMoney:(a)->
-    a = @deformatMoney a
+  getNumber:(input)->
+    winston.info 'input ' + input
+    a = input.replace '$', ""
+    winston.info 'a1 ' + a
+    a = a.replace ',', ""
+    a = a.replace "'", ""
+    winston.info 'a2 ' + a
     a = Number a
-    return a.toFixed 2
+    a.toFixed 2
 
-  deformatMoney:(a)->
-    a = a.replace '$', ''
-    a = a.replace ',', ''
-    return a
- 
   nextSequence:(accnum, db, cb)=>
     if db is @chargedb
       column = 'charge_num'

@@ -46,18 +46,19 @@
           if (_this.isMoney(params.amount) && params.location !== '') {
             return _this.nextSequence(accountnumber, _this.chargedb, function(transnum) {
               var amount, date, values;
-              amount = _this.formatMoney(params.amount);
-              date = params.date || new Date();
-              values = "(" + accountnumber + "," + transnum + ",'" + date + "','" + amount + "'," + params.location + ")";
+              winston.info(params.amount);
+              amount = params.amount;
+              winston.info(amount);
+              date = new Date();
+              values = "(" + accountnumber + "," + transnum + ",'" + date + "','$" + amount + "'," + params.location + ")";
               return _this.db.query("insert into " + _this.chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, function(result) {
                 return _this.db.query("select balance from " + _this.dbname + " where account_num_a='" + accountnumber + "'", function(result) {
                   var newbalance, oldbalance;
-                  oldbalance = _this.deformatMoney(result.rows[0].balance);
-                  winston.info(Number(oldbalance) + Number(params.amount));
-                  newbalance = Number(oldbalance) + Number(params.amount);
-                  newbalance = _this.formatMoney(newbalance);
+                  oldbalance = _this.getNumber(result.rows[0].balance);
+                  winston.info(oldbalance);
+                  newbalance = Number(oldbalance) + Number(_this.getNumber(amount));
                   winston.info(newbalance);
-                  return _this.db.query("update " + _this.dbname + " set balance='" + newbalance + "' where account_num_a='" + accountnumber + "'", function(result) {
+                  return _this.db.query("update " + _this.dbname + " set balance='$" + newbalance + "' where account_num_a='" + accountnumber + "'", function(result) {
                     return cb('charge complete');
                   });
                 });
@@ -78,8 +79,7 @@
 
     Account.prototype.isMoney = function(input) {
       var a;
-      a = this.deformatMoney(input);
-      a = Number(a);
+      a = Number(input);
       if (a !== Number.NaN) {
         return true;
       } else {
@@ -87,16 +87,16 @@
       }
     };
 
-    Account.prototype.formatMoney = function(a) {
-      a = this.deformatMoney(a);
+    Account.prototype.getNumber = function(input) {
+      var a;
+      winston.info('input ' + input);
+      a = input.replace('$', "");
+      winston.info('a1 ' + a);
+      a = a.replace(',', "");
+      a = a.replace("'", "");
+      winston.info('a2 ' + a);
       a = Number(a);
       return a.toFixed(2);
-    };
-
-    Account.prototype.deformatMoney = function(a) {
-      a = a.replace('$', '');
-      a = a.replace(',', '');
-      return a;
     };
 
     Account.prototype.nextSequence = function(accnum, db, cb) {
