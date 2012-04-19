@@ -1,5 +1,5 @@
 (function() {
-  var account, admin, auth, journey, needsCredentials, notLoggedin, profile, winston, wrongCreds;
+  var account, admin, auth, journey, needsCredentials, notLoggedin, profile, rewards, winston, wrongCreds;
 
   journey = require("journey");
 
@@ -13,12 +13,15 @@
 
   admin = require('./admin');
 
+  rewards = require('./rewards');
+
   exports.createRouter = function(db) {
     var router;
     auth = new auth(db);
     profile = new profile(db);
     account = new account(db, auth);
     admin = new admin(db);
+    rewards = new rewards(db);
     router = new journey.Router({
       strict: false,
       strictUrls: false,
@@ -56,11 +59,9 @@
         });
       });
       return this.get(/\/logout/).bind(function(res, params) {
-        return auth.logout(params.sessionid, function(value) {
-          return res.send(200, {}, {
-            message: 'You have successfully logged out'
-          });
-        });
+        return {
+          message: 'You have successfully logged out'
+        };
       });
     });
     router.path(/\/time/, function() {
@@ -123,6 +124,15 @@
           } else {
             return needsCredentials(res);
           }
+        });
+      });
+    });
+    router.path(/\/rewards/, function() {
+      return this.get(/\/range/).bind(function(res, params) {
+        return rewards.getRange(params, function(r) {
+          return res.send(200, {}, {
+            rewards: r
+          });
         });
       });
     });

@@ -155,7 +155,7 @@
       } else {
         column = 'payment_num';
       }
-      return this.db.query("select max(" + column + ") from " + db, function(result) {
+      return this.db.query("select max(" + column + ") from " + db + " where account_num='" + accnum + "'", function(result) {
         winston.info(JSON.stringify(result.rows[0]));
         return cb(Number(result.rows[0].max) + 1);
       });

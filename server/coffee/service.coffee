@@ -4,12 +4,14 @@ auth = require './auth'
 profile = require './profile'
 account = require './account'
 admin = require './admin'
+rewards = require './rewards'
 
 exports.createRouter = (db)->
   auth = new auth db
   profile = new profile db
   account = new account db, auth
   admin = new admin db
+  rewards = new rewards db
   router = new (journey.Router)(
     strict: false
     strictUrls: false
@@ -38,8 +40,6 @@ exports.createRouter = (db)->
           notLoggedin res
 
     @get(/\/logout/).bind (res, params) ->
-      auth.logout params.sessionid, (value)->
-        res.send 200, {}
           message:'You have successfully logged out'
 
   router.path /\/time/, ->
@@ -88,6 +88,13 @@ exports.createRouter = (db)->
             admintoken: adminsession
         else
           needsCredentials res
+
+  router.path /\/rewards/, ->
+    @get(/\/range/).bind (res, params)->
+      rewards.getRange params, (r)->
+        res.send 200, {},
+          rewards: r
+
   router
 
 

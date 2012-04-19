@@ -103,7 +103,7 @@ class Account
     else
       column = 'payment_num'
 
-    @db.query "select max("+column+") from " + db, (result)->
+    @db.query "select max("+column+") from " + db + " where account_num='" + accnum + "'", (result)->
       winston.info JSON.stringify result.rows[0]
       cb Number(result.rows[0].max) + 1
 
