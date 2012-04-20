@@ -44,7 +44,7 @@ class DB
       do @connect
 
   query:(sql, cb) ->
-    winston.info sql
+    winston.info 'sql:// ' + sql
     pg.connect @connString, (err, client)=>
       throw err if err
       client.query sql, (err, result)->

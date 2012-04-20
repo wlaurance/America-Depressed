@@ -18,12 +18,13 @@ class Rewards
 
   getRange:(params, cb)->
     upper = Number(params.upper)
+    lower = String(upper - 100)
     if params.type is 'sweep'
-      @db.query "select * from " + @sweep + " where cost <=" + upper + " and cost >" + upper - 100, (result)->
+      @db.query "select * from " + @sweep + " where cost <=" + upper + " and cost >" + lower, (result)->
         cb result.rows
-
     else if params.type is 'merch'
-      @db.query "select * from " + @merch + " where cost <=" + upper + " and cost >" + upper - 100, (result)->
+      winston.info upper - 100
+      @db.query "select * from " + @merch + " where cost <=" + upper + " and cost >" + lower, (result)->
         cb result.rows
 
     else 

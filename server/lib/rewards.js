@@ -26,14 +26,16 @@
     };
 
     Rewards.prototype.getRange = function(params, cb) {
-      var upper;
+      var lower, upper;
       upper = Number(params.upper);
+      lower = String(upper - 100);
       if (params.type === 'sweep') {
-        return this.db.query("select * from " + this.sweep + " where cost <=" + upper + " and cost >" + upper - 100, function(result) {
+        return this.db.query("select * from " + this.sweep + " where cost <=" + upper + " and cost >" + lower, function(result) {
           return cb(result.rows);
         });
       } else if (params.type === 'merch') {
-        return this.db.query("select * from " + this.merch + " where cost <=" + upper + " and cost >" + upper - 100, function(result) {
+        winston.info(upper - 100);
+        return this.db.query("select * from " + this.merch + " where cost <=" + upper + " and cost >" + lower, function(result) {
           return cb(result.rows);
         });
       } else {
