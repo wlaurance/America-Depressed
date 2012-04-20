@@ -11,7 +11,7 @@ exports.createRouter = (db)->
   profile = new profile db
   account = new account db, auth
   admin = new admin db
-  rewards = new rewards db
+  rewards = new rewards db, auth
   router = new (journey.Router)(
     strict: false
     strictUrls: false
@@ -99,6 +99,11 @@ exports.createRouter = (db)->
       rewards.getSpecific params, (r)->
         res.send 200, {},
           rewards: r
+
+    @post(/\/account/).bind (res, params)->
+      rewards.account params, (result)->
+        res.send 200, {},
+          rewards_account: result
   router
 
 

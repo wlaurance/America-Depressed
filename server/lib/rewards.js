@@ -5,10 +5,12 @@
 
   Rewards = (function() {
 
-    function Rewards(db) {
+    function Rewards(db, auth) {
       this.db = db;
+      this.auth = auth;
       this.merch = 'reward_merch';
       this.sweep = 'reward_sweep';
+      this.reward_account = 'reward_account';
     }
 
     Rewards.prototype.getSpecific = function(params, cb) {
@@ -41,6 +43,21 @@
       } else {
         return cb(params.type);
       }
+    };
+
+    Rewards.prototype.account = function(params, cb) {
+      var _this = this;
+      return this.auth.getUsername(params.sessionid, function(username) {
+        if (!username) {
+          cb('error');
+        } else {
+          return _this.db.query("select acct_id from earner where ssn='" + username + "'", function(result) {
+            return _this.db.query("select * from " + _this.reward_account + " where acct_id='" + result.rows[0].acct_id + "'", function(result) {
+              return cb(result.rows[0]);
+            });
+          });
+        }
+      });
     };
 
     return Rewards;

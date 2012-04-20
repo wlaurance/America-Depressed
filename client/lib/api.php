@@ -98,4 +98,18 @@ function makePayment($post)
   return json_decode($result);
 
 }
+
+function getRewardAccount($post)
+{
+  global $url;
+  $route = $url . '/rewards/account';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid=" . $_SESSION['token']);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+
+}
 ?>

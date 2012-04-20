@@ -21,7 +21,7 @@
     profile = new profile(db);
     account = new account(db, auth);
     admin = new admin(db);
-    rewards = new rewards(db);
+    rewards = new rewards(db, auth);
     router = new journey.Router({
       strict: false,
       strictUrls: false,
@@ -135,10 +135,17 @@
           });
         });
       });
-      return this.get(/\/specific/).bind(function(res, params) {
+      this.get(/\/specific/).bind(function(res, params) {
         return rewards.getSpecific(params, function(r) {
           return res.send(200, {}, {
             rewards: r
+          });
+        });
+      });
+      return this.post(/\/account/).bind(function(res, params) {
+        return rewards.account(params, function(result) {
+          return res.send(200, {}, {
+            rewards_account: result
           });
         });
       });

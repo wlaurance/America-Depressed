@@ -11,6 +11,8 @@ else
      $profile = $profile->{'profile'};
      $account = account();
      $account = $account->{'account'};
+     $reward = getRewardAccount();
+     $reward = $reward->{'rewards_account'}
 ?>
 <html>
 	<head>
@@ -65,7 +67,7 @@ else
        echo $account->{'account_num_i'};
      ?></td>
         </tr>
-        <td>Reward Account Number:</td><td>12312312</td>
+        <td>Reward Account Number:</td><td><?php echo $reward->{'acct_id'}; ?></td>
         </tr>
         <tr>
         <td>Active?:</td><td><?php 
