@@ -112,4 +112,22 @@ function getRewardAccount($post)
   return json_decode($result);
 
 }
+
+function getRewards($type, $upper)
+{
+  global $url;
+  $route = $url . '/rewards/range';
+  if ($type == 'm')
+    $type = 'merch';
+  else
+    $type = 'sweep';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route . "?sessionid=" . $_SESSION['token'] . "&upper=" .$upper . "&type=". $type);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+}
+
+
 ?>

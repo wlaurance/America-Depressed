@@ -2,7 +2,9 @@
 session_start();
 require_once('lib/api.php');
 if (isset($_SESSION['token']))
+{
   print_info();
+}
 else
   header("Location: login.php");
  function print_info()
@@ -73,16 +75,19 @@ function printcoltitles($type){
 <?php }
 
 function printrewards($type, $amount){
-	if($type == "s") { ?>
-		<tr><td>This would be a sweep</td><td>Cost</td><td>Entries</td><td>end_date
-		</td><td><form style="margin:0; text-align:center;" action="redeem.php?id=INSERT ID HERE" 
-		method="get"><input type="submit" value="Redeem" /></form></td></tr>
-<?php }
-	else { ?>
-		<tr><td>This would be a merch</td><td>Cost</td><td>Quantity</td><td><form style="margin:0; text-
-		align:center;"action="redeem.php?id=INSERT ID HERE" method="get"><input type="submit" 
-		value="Redeem" /></form></td></tr>
-<?php }
+  $rewards = getRewards($type, $amount);
+  foreach ($rewards->{'rewards'} as $item){
+    if($type == "s") { ?>
+      <tr><td><?php echo $item->{'name'}; ?></td><td><?php echo $item->{'cost'}; ?></td><td><?php echo $item->{'entries'}; ?></td><td><?php echo $item->{'end_date'}; ?>
+    </td><td><form style="margin:0; text-align:center;" action="redeem.php?id=<?php echo $item->{'sweep_id'}; ?>" 
+      method="get"><input type="submit" value="Redeem" /></form></td></tr>
+  <?php }
+    else { ?>
+      <tr><td><?php echo $item->{'name'}; ?></td><td><?php echo $item->{'cost'}; ?></td><td><?php echo $item->{'quantity'}; ?></td><td><form style="margin:0; text-
+      align:center;"action="redeem.php?id=<?php echo $item->{'merch-id'};?>" method="get"><input type="submit" 
+      value="Redeem" /></form></td></tr>
+  <?php }
+  }
 }
 
 }
