@@ -2,7 +2,7 @@ pg = require 'pg'
 winston = require 'winston'
 dns = require 'dns'
 rl = require 'readline'
-
+escape = require './escape'
 class DB
   constructor:(@opts)->
     winston.info JSON.stringify @opts
@@ -44,11 +44,13 @@ class DB
       do @connect
 
   query:(sql, cb) ->
-    winston.info 'sql:// ' + sql
-    pg.connect @connString, (err, client)=>
-      throw err if err
-      client.query sql, (err, result)->
-        throw err if err
-        cb result
-
+    winston.info 'sql:// ' + escape sql
+    try
+      pg.connect @connString, (err, client)=>
+        return if err
+        client.query sql, (err, result)->
+          return if err
+          cb result
+    catch e
+      winston.info 'try catch query error ' + e
 exports.DB = DB

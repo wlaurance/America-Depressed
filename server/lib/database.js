@@ -1,5 +1,5 @@
 (function() {
-  var DB, dns, pg, rl, winston,
+  var DB, dns, escape, pg, rl, winston,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   pg = require('pg');
@@ -9,6 +9,8 @@
   dns = require('dns');
 
   rl = require('readline');
+
+  escape = require('./escape');
 
   DB = (function() {
 
@@ -74,14 +76,18 @@
 
     DB.prototype.query = function(sql, cb) {
       var _this = this;
-      winston.info('sql:// ' + sql);
-      return pg.connect(this.connString, function(err, client) {
-        if (err) throw err;
-        return client.query(sql, function(err, result) {
-          if (err) throw err;
-          return cb(result);
+      winston.info('sql:// ' + escape(sql));
+      try {
+        return pg.connect(this.connString, function(err, client) {
+          if (err) return;
+          return client.query(sql, function(err, result) {
+            if (err) return;
+            return cb(result);
+          });
         });
-      });
+      } catch (e) {
+        return winston.info('try catch query error ' + e);
+      }
     };
 
     return DB;

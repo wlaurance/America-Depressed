@@ -128,8 +128,15 @@
       });
     });
     router.path(/\/rewards/, function() {
-      return this.get(/\/range/).bind(function(res, params) {
+      this.get(/\/range/).bind(function(res, params) {
         return rewards.getRange(params, function(r) {
+          return res.send(200, {}, {
+            rewards: r
+          });
+        });
+      });
+      return this.get(/\/specific/).bind(function(res, params) {
+        return rewards.getSpecific(params, function(r) {
           return res.send(200, {}, {
             rewards: r
           });
