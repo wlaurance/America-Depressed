@@ -40,7 +40,8 @@ exports.createRouter = (db)->
           notLoggedin res
 
     @get(/\/logout/).bind (res, params) ->
-          message:'You have successfully logged out'
+      res.send 200, {},
+        message:'You have successfully logged out'
 
   router.path /\/time/, ->
     @get().bind (res) ->

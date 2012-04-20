@@ -59,9 +59,9 @@
         });
       });
       return this.get(/\/logout/).bind(function(res, params) {
-        return {
+        return res.send(200, {}, {
           message: 'You have successfully logged out'
-        };
+        });
       });
     });
     router.path(/\/time/, function() {
