@@ -139,11 +139,7 @@
     Account.prototype.getNumber = function(input) {
       var a;
       winston.info('input ' + input);
-      a = input.replace('$', "");
-      winston.info('a1 ' + a);
-      a = a.replace(',', "");
-      a = a.replace("'", "");
-      winston.info('a2 ' + a);
+      a = input.replace(/[$,]/g, '');
       a = Number(a);
       return a.toFixed(2);
     };
