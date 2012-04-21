@@ -142,10 +142,17 @@
           });
         });
       });
-      return this.post(/\/account/).bind(function(res, params) {
+      this.post(/\/account/).bind(function(res, params) {
         return rewards.account(params, function(result) {
           return res.send(200, {}, {
             rewards_account: result
+          });
+        });
+      });
+      return this.post(/\/redeem/).bind(function(res, params) {
+        return rewards.redeem(params, function(result) {
+          return res.send(200, {}, {
+            rewards_message: result
           });
         });
       });

@@ -11,6 +11,8 @@ else
      $profile = $profile->{'profile'};
      $account = account();
      $account = $account->{'account'};
+     $rewarda = getRewardAccount();
+     $rewarda = $rewarda->{'rewards_account'}
 ?>
 <html>
 	<head>
@@ -34,13 +36,13 @@ else
 			<div class="infotable">
 			<table border="0" class="info">
 				<tr>
-        <td>Reward Account Number:</td><td>156451</td>
+        <td>Reward Account Number:</td><td><?php echo $rewarda->{'acct_id'}; ?></td>
 				</tr>
 				<tr>
-        <td>Points Balance:</td><td>489153</td>
+        <td>Points Balance:</td><td><?php echo $rewarda->{'points'}; ?></td>
 				</tr>
 				<tr>
-        <td>Active:</td><td>Y</td>
+        <td>Active:</td><td><?php echo $rewarda->{'active'}; ?></</td>
 				</tr>
 			
 			</table> 

@@ -11,6 +11,8 @@ else
      $profile = $profile->{'profile'};
      $account = account();
      $account = $account->{'account'};
+     $rewarda = getRewardAccount();
+     $rewarda = $rewarda->{'rewards_account'};
 ?>
 <html>
 	<head>
@@ -27,7 +29,7 @@ else
 		
 		<div class="content">
 			<div class="title">
-      Welcome to the Reward Store, <?php echo $profile->{'first_name'} . ' ' . $profile->{'last_name'};?>.  You have 748643214324856 points.
+      Welcome to the Reward Store, <?php echo $profile->{'first_name'} . ' ' . $profile->{'last_name'};?>.  You have <?php echo $rewarda->{'points'}; ?> points.
 			</div>
 			<br/>
 			<br/>

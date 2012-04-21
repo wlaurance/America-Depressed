@@ -3,21 +3,27 @@ session_start();
 require_once('lib/api.php');
 if (isset($_SESSION['token']))
 {
-  print_info();
+  $rewarda = getRewardAccount();
+  $rewarda = $rewarda->{'rewards_account'};
+  $reward = array();
+  $reward['type'] = $_GET['type'];
+  $reward['id'] = $_GET['id'];
+  $entry = redeemReward($reward, $rewarda->{'acct_id'});
+  $entry = $entry->{'rewards_message'};
+
+  print_info($entry);
 }
 else
   header("Location: login.php");
- function print_info()
+ function print_info($entry)
    {
      $profile = $_SESSION['profile'];
      $profile = $profile->{'profile'};
      $account = account();
      $account = $account->{'account'};
-     $type = $_GET["t"];
-     $amount = $_GET["p"];
      $rewarda = getRewardAccount();
      $rewarda = $rewarda->{'rewards_account'};
-?>
+     ?>
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/rewards.css" />
@@ -39,18 +45,9 @@ else
 			<br/>
 
 			<div class="infotable">
-			<h2><?php if($type=="s")
-					echo "Sweepstakes";
-					if ($type=="m")
-						echo "Merchandise"; ?></h2>
 			<br/>
-			<table border="0" class="info">
-			
-				<?php printcoltitles($type); ?>
-				<?php printrewards($type, $amount); ?>
 
-
-			</table> 
+      <?php echo $entry; ?>
 			</div>
 			<br/>
 			<table border="0"><tr>

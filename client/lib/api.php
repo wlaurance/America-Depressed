@@ -99,7 +99,7 @@ function makePayment($post)
 
 }
 
-function getRewardAccount($post)
+function getRewardAccount()
 {
   global $url;
   $route = $url . '/rewards/account';
@@ -128,6 +128,20 @@ function getRewards($type, $upper)
   curl_close($ch);
   return json_decode($result);
 }
+
+function redeemReward($reward, $acct_id)
+{
+  global $url;
+  $route = $url . '/rewards/redeem';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid=" . $_SESSION['token'] . "&type=".$reward['type']."&id=". $reward["id"]."&acct_id=".$acct_id);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+}
+
 
 
 ?>
