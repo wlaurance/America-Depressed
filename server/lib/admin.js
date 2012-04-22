@@ -10,12 +10,18 @@
 
     function Admin(db) {
       this.db = db;
+      this.count = __bind(this.count, this);
+      this.countacc = __bind(this.countacc, this);
+      this.sum = __bind(this.sum, this);
+      this.min = __bind(this.min, this);
+      this.max = __bind(this.max, this);
       this.avg = __bind(this.avg, this);
       this.admindb = 'admin';
       this.address = 'address';
       this.session = new auth(this.db, this.admindb);
       this.customerinfo = 'customer';
       this.accountinfo = 'account_active';
+      this.accountinactive = 'account_inactive';
     }
 
     Admin.prototype.auth = function(user, pass, cb) {
@@ -60,17 +66,17 @@
         case 'avg(credit_score)':
           return this.avg('credit_score', params, this.customerinfo, cb);
         case 'max(balance)':
-          return this.max('balance', params, cb);
+          return this.max('balance', params, this.accountinfo, cb);
         case 'max(credit_score)':
-          return this.max('credit_score', params, cb);
+          return this.max('credit_score', params, this.customerinfo, cb);
         case 'min(balance)':
-          return this.min('balance', params, cb);
+          return this.min('balance', params, this.accountinfo, cb);
         case 'min(credit_score)':
-          return this.min('credit_score', params, cb);
+          return this.min('credit_score', params, this.customerinfo, cb);
         case 'sum(balance)':
-          return this.sum('balance', params, cb);
+          return this.sum('balance', params, this.accountinfo, cb);
         case 'count(account_num)':
-          return this.count('account_num', params, cb);
+          return this.countacc('account_num', params, this.accountinfo, cb);
         default:
           return cb('not a valid function');
       }
@@ -91,6 +97,52 @@
           avg = sum / count;
           return cb(avg);
         });
+      });
+    };
+
+    Admin.prototype.max = function(what, params, db, cb) {
+      var _this = this;
+      return this.db.query("select max(" + what + ") from " + db, function(result) {
+        return cb(result.rows[0].max);
+      });
+    };
+
+    Admin.prototype.min = function(what, params, db, cb) {
+      var _this = this;
+      return this.db.query("select min(" + what + ") from " + db, function(result) {
+        return cb(result.rows[0].min);
+      });
+    };
+
+    Admin.prototype.sum = function(what, params, db, cb) {
+      var _this = this;
+      return this.db.query("select sum(" + what + ") from " + db, function(result) {
+        return cb(result.rows[0].sum);
+      });
+    };
+
+    Admin.prototype.countacc = function(what, params, db, cb) {
+      var first, second, sum, total;
+      first = false;
+      second = false;
+      total = 0;
+      sum = function(incomming) {
+        total += incomming;
+        if (first) {
+          second = true;
+        } else {
+          first = true;
+        }
+        if (first && second) return cb(total);
+      };
+      this.count('account_num_a', params, this.accountinfo, sum);
+      return this.count('account_num_i', params, this.accountinactive, sum);
+    };
+
+    Admin.prototype.count = function(what, params, db, cb) {
+      var _this = this;
+      return this.db.query("select count(" + what + ") from " + db, function(result) {
+        return cb(result.rows[0].count);
       });
     };
 

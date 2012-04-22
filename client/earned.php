@@ -36,6 +36,7 @@ else
 
 			<div class="infotable">
 			<table border="0" class="info">
+      <tr><td><b>Name</b></td><td><b>Type</b></td><td><b>Value</b></td></tr>
       <?php 
      foreach($rewards_earned as $reward){
        $name = $reward->{'name'};
@@ -49,7 +50,6 @@ else
        if (isset($reward->{'name'}))
        {
         ?>
-      <tr><td><b>Name</b></td><td><b>Type</b></td><td><b>Value</b></td></tr>
       <tr><td><?php echo $name; ?></td><td><?php echo $type; ?></td><td><?php echo $value; ?></td></tr>      
       <?php }} ?>
 			</table> 

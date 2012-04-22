@@ -66,7 +66,7 @@ class Rewards
               return
             @updateReward reward, (result) =>
               winston.info 'updated reward ' + JSON.stringify reward
-              cb result.message
+            cb result.message
 
 
   updateReward: (reward, cb)=>
@@ -102,6 +102,9 @@ class Rewards
     @db.query "select reward_id from " + @rewards_earned + " where acct_id='" + params.acct_id + "'", (result)=>
       reward_list = result.rows
       redeemed = []
+      if reward_list.length is 0
+        cb 'none'
+        return
       getreward = (id, cb2) =>
         p=
           type: (if id < 500 then 'sweep' else 'merch')

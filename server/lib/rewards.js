@@ -89,10 +89,10 @@
                 cb(result.message);
                 return;
               }
-              return _this.updateReward(reward, function(result) {
-                winston.info('updated reward ' + JSON.stringify(reward));
-                return cb(result.message);
+              _this.updateReward(reward, function(result) {
+                return winston.info('updated reward ' + JSON.stringify(reward));
               });
+              return cb(result.message);
             });
           });
         }
@@ -152,6 +152,10 @@
         var getreward, r, redeemed, reward_list, _i, _len, _results;
         reward_list = result.rows;
         redeemed = [];
+        if (reward_list.length === 0) {
+          cb('none');
+          return;
+        }
         getreward = function(id, cb2) {
           var p;
           p = {
