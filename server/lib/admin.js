@@ -1,15 +1,18 @@
 (function() {
-  var Admin, auth, money,
+  var Admin, auth, money, winston,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   auth = require('./auth');
 
   money = require('./money');
 
+  winston = require('winston');
+
   Admin = (function() {
 
     function Admin(db) {
       this.db = db;
+      this.processDBClause = __bind(this.processDBClause, this);
       this.count = __bind(this.count, this);
       this.countacc = __bind(this.countacc, this);
       this.sum = __bind(this.sum, this);
@@ -84,6 +87,7 @@
 
     Admin.prototype.avg = function(what, params, db, cb) {
       var _this = this;
+      db = this.processDBClause(params, db, what === 'balance');
       return this.db.query("select sum(" + what + ") from " + db, function(result) {
         var sum;
         if (typeof result.rows[0].sum === 'number') {
@@ -102,6 +106,7 @@
 
     Admin.prototype.max = function(what, params, db, cb) {
       var _this = this;
+      db = this.processDBClause(params, db, what === 'balance');
       return this.db.query("select max(" + what + ") from " + db, function(result) {
         return cb(result.rows[0].max);
       });
@@ -109,6 +114,7 @@
 
     Admin.prototype.min = function(what, params, db, cb) {
       var _this = this;
+      db = this.processDBClause(params, db, what === 'balance');
       return this.db.query("select min(" + what + ") from " + db, function(result) {
         return cb(result.rows[0].min);
       });
@@ -116,6 +122,7 @@
 
     Admin.prototype.sum = function(what, params, db, cb) {
       var _this = this;
+      db = this.processDBClause(params, db, what === 'balance');
       return this.db.query("select sum(" + what + ") from " + db, function(result) {
         return cb(result.rows[0].sum);
       });
@@ -141,9 +148,48 @@
 
     Admin.prototype.count = function(what, params, db, cb) {
       var _this = this;
+      db = this.processDBClause(params, db, what === 'balance');
       return this.db.query("select count(" + what + ") from " + db, function(result) {
         return cb(result.rows[0].count);
       });
+    };
+
+    Admin.prototype.processDBClause = function(params, db, involvesAccounts) {
+      var bstr, cstr, genderspecific, statespecific, zipspecific;
+      if (involvesAccounts == null) involvesAccounts = false;
+      winston.info(JSON.stringify(params));
+      genderspecific = false;
+      statespecific = false;
+      zipspecific = false;
+      if (params.gender !== 'ALL') genderspecific = true;
+      if (params.zip !== 'ALL') zipspecific = true;
+      if (params.state !== 'ALL') {
+        statespecific = true;
+        zipspecific = false;
+      }
+      bstr = "customer, debtor, address where customer.ssn = debtor.ssn and account_active.account_num_a = debtor.account_num and customer.zip = address.zip";
+      cstr = "customer, debtor where customer.ssn = debtor.ssn and account_active.account_num_a = debtor.account_num";
+      if (!genderspecific && !statespecific && !zipspecific) return db;
+      if (genderspecific && statespecific && involvesAccounts) {
+        return db + ", " + bstr + " and address.state='" + params.state + "' and customer.gender='" + params.gender + "'";
+      }
+      if (genderspecific && statespecific) {
+        return bstr + " and address.state ='" + params.state + "' and customer.gender='" + params.gender + "'";
+      }
+      if (genderspecific && zipspecific && involvesAccounts) {
+        return db + ", " + cstr + " and customer.zip ='" + params.zip + "' and customer.gender='" + params.gender + "'";
+      }
+      if (genderspecific && zipspecific) {
+        return "customer where gender='" + params.gender + "' and zip='" + params.zip + "'";
+      }
+      if (genderspecific && involvesAccounts) {
+        return db + ", " + cstr + " and customer.gender='" + params.gender + "'";
+      }
+      if (genderspecific) {
+        return "customer where gender='" + params.gender + "'";
+      } else {
+        return db;
+      }
     };
 
     return Admin;

@@ -1,5 +1,6 @@
 auth = require './auth'
 money = require './money'
+winston = require 'winston'
 
 class Admin
   constructor:(@db)->
@@ -47,6 +48,7 @@ class Admin
 
 
   avg:(what, params, db, cb)=>
+    db = @processDBClause params, db, (what is 'balance')
     @db.query "select sum(" + what + ") from " + db, (result)=>
       if typeof result.rows[0].sum is 'number'
         sum = result.rows[0].sum
@@ -58,15 +60,18 @@ class Admin
         cb avg
 
   max:(what, params, db, cb)=>
+    db = @processDBClause params, db, (what is 'balance')
     @db.query "select max(" + what + ") from " + db, (result)=>
       cb result.rows[0].max
 
   min:(what, params, db, cb)=>
+    db = @processDBClause params, db, (what is 'balance')
     @db.query "select min(" + what + ") from " + db, (result)=>
       cb result.rows[0].min
 
 
   sum:(what, params, db, cb)=>
+    db = @processDBClause params, db, (what is 'balance')
     @db.query "select sum(" + what + ") from " + db, (result)=>
       cb result.rows[0].sum
 
@@ -89,7 +94,41 @@ class Admin
     @count 'account_num_i', params, @accountinactive, sum
 
   count:(what, params, db, cb)=>
+    db = @processDBClause params, db, (what is 'balance')
     @db.query "select count(" + what + ") from " + db, (result)=>
       cb result.rows[0].count
+
+
+  processDBClause:(params, db, involvesAccounts = false)=>
+    winston.info JSON.stringify params
+    genderspecific = false
+    statespecific = false
+    zipspecific = false
+    if params.gender isnt 'ALL'
+      genderspecific = true
+    if params.zip isnt 'ALL'
+      zipspecific = true
+    if params.state isnt 'ALL'
+      statespecific = true
+      zipspecific = false
+
+    bstr = "customer, debtor, address where customer.ssn = debtor.ssn and account_active.account_num_a = debtor.account_num and customer.zip = address.zip"
+    cstr = "customer, debtor where customer.ssn = debtor.ssn and account_active.account_num_a = debtor.account_num"
+    if not genderspecific and not statespecific and not zipspecific
+      return db
+    if genderspecific and statespecific and involvesAccounts
+      return db + ", " + bstr + " and address.state='" + params.state + "' and customer.gender='" + params.gender + "'"
+    if genderspecific and statespecific
+      return bstr + " and address.state ='" + params.state + "' and customer.gender='" + params.gender + "'"
+    if genderspecific and zipspecific and involvesAccounts
+      return db + ", " + cstr + " and customer.zip ='" + params.zip + "' and customer.gender='" + params.gender + "'"
+    if genderspecific and zipspecific
+      return "customer where gender='" + params.gender + "' and zip='" + params.zip + "'"
+    if genderspecific and involvesAccounts
+      return db + ", " + cstr + " and customer.gender='" + params.gender + "'"
+    if genderspecific 
+      return "customer where gender='" + params.gender + "'"
+    else
+      return db
 
 module.exports = Admin

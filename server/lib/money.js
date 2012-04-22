@@ -20,6 +20,7 @@
     Money.prototype.getNumber = function(input) {
       var a;
       winston.info('input ' + input);
+      if (input === null || input === void 0) return null;
       a = input.replace(/[$,]/g, '');
       a = Number(a);
       return a.toFixed(2);

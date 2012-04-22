@@ -12,6 +12,8 @@ class Money
 
   getNumber:(input)->
     winston.info 'input ' + input
+    if input is null or input is undefined
+      return null
     a = input.replace /[$,]/g, ''
     a = Number a
     a.toFixed 2
