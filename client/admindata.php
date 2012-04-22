@@ -5,7 +5,8 @@ if (isset($_SESSION['admintoken']))
 {
   if ($_SERVER['REQUEST_METHOD'] == 'POST')
   {
-    
+    $data = processAdminRequest($_POST);
+    print_data($data);
   }
   else
   {
@@ -126,4 +127,29 @@ else
 </html>
 <?php 
 }
+function print_data($data)
+{
+?>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/admin.css" />
+		<title>America Depressed</title>
+	</head>
+	
+	<body>
+		<center>
+		<div class="headerimage">
+			<img src="http://www.cs.wm.edu/~elcole/public/ad.png"/>
+		</div>
+		<br/>
+		
+		<div class="content">
+			<div class="title">
+      Welcome, Admin <?php echo $_SESSION['adminname']; ?>!
+			</div>
+			<br/>
+			<br/>
+			<div class="infotable">
+<?php
+}  
 ?>

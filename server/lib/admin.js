@@ -47,6 +47,29 @@
       });
     };
 
+    Admin.prototype.dofunction = function(params, cb) {
+      switch (params["function"]) {
+        case 'avg(balance)':
+          return this.avg('balance', params, cb);
+        case 'avg(credit_score)':
+          return this.avg('credit_score', params, cb);
+        case 'max(balance)':
+          return this.max('balance', params, cb);
+        case 'max(credit_score)':
+          return this.max('credit_score', params, cb);
+        case 'min(balance)':
+          return this.min('balance', params, cb);
+        case 'min(credit_score)':
+          return this.min('credit_score', params, cb);
+        case 'sum(balance)':
+          return this.sum('balance', params, cb);
+        case 'count(account_num)':
+          return this.count('account_num', params, cb);
+        default:
+          return cb('not a valid function');
+      }
+    };
+
     return Admin;
 
   })();

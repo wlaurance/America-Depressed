@@ -1,5 +1,6 @@
 billing = require './billing'
 winston = require 'winston'
+money = require './money'
 
 class Account
   constructor:(@db, @auth)->
@@ -23,7 +24,7 @@ class Account
   postCharge:(params, cb)->
     @auth.getUsername params.sessionid, (username)=>
       @getAccount username, (accountnumber)=>
-        if @isMoney(params.amount) and params.location isnt ''
+        if money.isMoney(params.amount) and params.location isnt ''
           @nextSequence accountnumber, @chargedb, (transnum)=>
             amount = params.amount
             if Number(amount) <= 0
@@ -33,7 +34,7 @@ class Account
             values = "("+ accountnumber + "," + transnum + ",'" + date + "','$" + amount + "'," + params.location + ")"
             @db.query "insert into " + @chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, (result)=>
               @getCurrentBalance accountnumber, (oldbalance)=>
-                newbalance = Number(oldbalance) + Number(@getNumber amount)
+                newbalance = Number(oldbalance) + Number(money.getNumber amount)
                 @updateBalance newbalance, accountnumber, (result)=>
                   cb result
         else
@@ -42,14 +43,14 @@ class Account
   postPayment:(params, cb)->
     @auth.getUsername params.sessionid, (username)=>
       @getAccount username, (accountnumber)=>
-        if @isMoney(params.amount)
+        if money.isMoney(params.amount)
           @nextSequence accountnumber, @paymentdb, (transnum)=>
             amount = params.amount
             date = @transDate params.charge_date
             values = "(" + accountnumber + "," + transnum + ",'" + date + "','$" + amount + "')"
             @db.query "insert into " + @paymentdb + " (account_num, payment_num, payment_date, payment_amount) VALUES " + values, (resutl)=>
               @getCurrentBalance accountnumber, (oldbalance)=>
-                newbalance = Number(oldbalance) - Number(@getNumber amount)
+                newbalance = Number(oldbalance) - Number(money.getNumber amount)
                 @updateBalance newbalance, accountnumber, (result)=>
                   cb result
 
@@ -65,7 +66,7 @@ class Account
 
   getCurrentBalance:(accountnumber, cb)=>
     @db.query "select balance from " + @dbname + " where account_num_a='" + accountnumber + "'", (result)=>
-      oldbalance = @getNumber result.rows[0].balance
+      oldbalance = money.getNumber result.rows[0].balance
       cb oldbalance
 
 
@@ -78,20 +79,6 @@ class Account
       return new Date date
     else
       return new Date
-
-
-  isMoney:(input)->
-    a = Number input
-    if a isnt Number.NaN
-      return true
-    else
-      return false
-
-  getNumber:(input)->
-    winston.info 'input ' + input
-    a = input.replace /[$,]/g, ''
-    a = Number a
-    a.toFixed 2
 
   nextSequence:(accnum, db, cb)=>
     if db is @chargedb

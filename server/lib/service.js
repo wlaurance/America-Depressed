@@ -135,10 +135,17 @@
           });
         });
       });
-      return this.get(/\/zip/).bind(function(res) {
+      this.get(/\/zip/).bind(function(res) {
         return admin.getAllZips(function(zips) {
           return res.send(200, {}, {
             zip: zips
+          });
+        });
+      });
+      return this.post(/\/function/).bind(function(res, params) {
+        return admin.dofunction(params, function(result) {
+          return res.send(200, {}, {
+            results: result
           });
         });
       });

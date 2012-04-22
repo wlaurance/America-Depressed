@@ -101,6 +101,12 @@ exports.createRouter = (db)->
         res.send 200, {},
           zip: zips
 
+    @post(/\/function/).bind (res, params)->
+      admin.dofunction params, (result)->
+        res.send 200, {},
+          results:result
+
+
   router.path /\/rewards/, ->
     @get(/\/range/).bind (res, params)->
       rewards.getRange params, (r)->

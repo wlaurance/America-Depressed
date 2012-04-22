@@ -1,10 +1,12 @@
 (function() {
-  var Account, billing, winston,
+  var Account, billing, money, winston,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   billing = require('./billing');
 
   winston = require('winston');
+
+  money = require('./money');
 
   Account = (function() {
 
@@ -44,7 +46,7 @@
       var _this = this;
       return this.auth.getUsername(params.sessionid, function(username) {
         return _this.getAccount(username, function(accountnumber) {
-          if (_this.isMoney(params.amount) && params.location !== '') {
+          if (money.isMoney(params.amount) && params.location !== '') {
             return _this.nextSequence(accountnumber, _this.chargedb, function(transnum) {
               var amount, date, values;
               amount = params.amount;
@@ -57,7 +59,7 @@
               return _this.db.query("insert into " + _this.chargedb + " (account_num, charge_num, charge_date, charge_amount, location) VALUES " + values, function(result) {
                 return _this.getCurrentBalance(accountnumber, function(oldbalance) {
                   var newbalance;
-                  newbalance = Number(oldbalance) + Number(_this.getNumber(amount));
+                  newbalance = Number(oldbalance) + Number(money.getNumber(amount));
                   return _this.updateBalance(newbalance, accountnumber, function(result) {
                     return cb(result);
                   });
@@ -75,7 +77,7 @@
       var _this = this;
       return this.auth.getUsername(params.sessionid, function(username) {
         return _this.getAccount(username, function(accountnumber) {
-          if (_this.isMoney(params.amount)) {
+          if (money.isMoney(params.amount)) {
             return _this.nextSequence(accountnumber, _this.paymentdb, function(transnum) {
               var amount, date, values;
               amount = params.amount;
@@ -84,7 +86,7 @@
               return _this.db.query("insert into " + _this.paymentdb + " (account_num, payment_num, payment_date, payment_amount) VALUES " + values, function(resutl) {
                 return _this.getCurrentBalance(accountnumber, function(oldbalance) {
                   var newbalance;
-                  newbalance = Number(oldbalance) - Number(_this.getNumber(amount));
+                  newbalance = Number(oldbalance) - Number(money.getNumber(amount));
                   return _this.updateBalance(newbalance, accountnumber, function(result) {
                     return cb(result);
                   });
@@ -106,7 +108,7 @@
       var _this = this;
       return this.db.query("select balance from " + this.dbname + " where account_num_a='" + accountnumber + "'", function(result) {
         var oldbalance;
-        oldbalance = _this.getNumber(result.rows[0].balance);
+        oldbalance = money.getNumber(result.rows[0].balance);
         return cb(oldbalance);
       });
     };
@@ -124,24 +126,6 @@
       } else {
         return new Date;
       }
-    };
-
-    Account.prototype.isMoney = function(input) {
-      var a;
-      a = Number(input);
-      if (a !== Number.NaN) {
-        return true;
-      } else {
-        return false;
-      }
-    };
-
-    Account.prototype.getNumber = function(input) {
-      var a;
-      winston.info('input ' + input);
-      a = input.replace(/[$,]/g, '');
-      a = Number(a);
-      return a.toFixed(2);
     };
 
     Account.prototype.nextSequence = function(accnum, db, cb) {
