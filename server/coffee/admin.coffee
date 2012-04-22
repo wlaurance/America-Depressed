@@ -1,10 +1,13 @@
 auth = require './auth'
+money = require './money'
 
 class Admin
   constructor:(@db)->
     @admindb = 'admin'
     @address = 'address'
     @session = new auth @db, @admindb
+    @customerinfo = 'customer'
+    @accountinfo = 'account_active'
 
   auth:(user, pass, cb)->
     @session.login user, pass, (sessionid)->
@@ -31,8 +34,8 @@ class Admin
 
   dofunction:(params, cb)->
     switch params.function
-      when 'avg(balance)' then @avg 'balance', params, cb
-      when 'avg(credit_score)' then @avg 'credit_score', params, cb
+      when 'avg(balance)' then @avg 'balance', params, @accountinfo, cb
+      when 'avg(credit_score)' then @avg 'credit_score', params, @customerinfo, cb
       when 'max(balance)' then @max 'balance', params, cb
       when 'max(credit_score)' then @max 'credit_score', params, cb
       when 'min(balance)' then @min 'balance', params, cb
@@ -41,5 +44,16 @@ class Admin
       when 'count(account_num)' then @count 'account_num', params, cb
       else cb 'not a valid function'
 
+
+  avg:(what, params, db, cb)=>
+    @db.query "select sum(" + what + ") from " + db, (result)=>
+      if typeof result.rows[0].sum is 'number'
+        sum = result.rows[0].sum
+      else
+        sum = money.getNumber result.rows[0].sum
+      @db.query "select count(" + what + ") from " + db, (result2)=>
+        count = result2.rows[0].count
+        avg = sum / count
+        cb avg
 
 module.exports = Admin

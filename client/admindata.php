@@ -6,7 +6,7 @@ if (isset($_SESSION['admintoken']))
   if ($_SERVER['REQUEST_METHOD'] == 'POST')
   {
     $data = processAdminRequest($_POST);
-    print_data($data);
+    print_data($data, $_POST);
   }
   else
   {
@@ -127,7 +127,7 @@ else
 </html>
 <?php 
 }
-function print_data($data)
+function print_data($data, $post)
 {
 ?>
 <html>
@@ -150,6 +150,20 @@ function print_data($data)
 			<br/>
 			<br/>
 			<div class="infotable">
+      The result of <?php echo $post['function']; ?> is <?php echo $data->{'results'}; ?>
+      </div>	
+      <br/>
+			<table border="0">
+			<tr>
+			<td><form action="adminhome.php" method="get"><input type="submit" value="Home" /></form></td>
+			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			</tr>
+			</table>
+    </div>
+    </center>
+</body>
+</html>
+
 <?php
 }  
 ?>

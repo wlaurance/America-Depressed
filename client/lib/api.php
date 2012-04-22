@@ -212,11 +212,12 @@ function processAdminRequest($post)
   $route = $url . '/admin/function';
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $route);
-  curl_setopt($ch, CURL_POSTFIELDS, "sessionid={$_SESSION['admintoken']}&zip={$zip}&gender={$gender}&state={$state}&function={$function}");
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid={$_SESSION['admintoken']}&zip={$zip}&gender={$gender}&state={$state}&function={$function}");
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   $result = curl_exec($ch);
   curl_close($ch);
   $z = json_decode($result);
+  var_dump($z);
   return $z;
 }
 

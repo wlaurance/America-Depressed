@@ -1,15 +1,21 @@
 (function() {
-  var Admin, auth;
+  var Admin, auth, money,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   auth = require('./auth');
+
+  money = require('./money');
 
   Admin = (function() {
 
     function Admin(db) {
       this.db = db;
+      this.avg = __bind(this.avg, this);
       this.admindb = 'admin';
       this.address = 'address';
       this.session = new auth(this.db, this.admindb);
+      this.customerinfo = 'customer';
+      this.accountinfo = 'account_active';
     }
 
     Admin.prototype.auth = function(user, pass, cb) {
@@ -50,9 +56,9 @@
     Admin.prototype.dofunction = function(params, cb) {
       switch (params["function"]) {
         case 'avg(balance)':
-          return this.avg('balance', params, cb);
+          return this.avg('balance', params, this.accountinfo, cb);
         case 'avg(credit_score)':
-          return this.avg('credit_score', params, cb);
+          return this.avg('credit_score', params, this.customerinfo, cb);
         case 'max(balance)':
           return this.max('balance', params, cb);
         case 'max(credit_score)':
@@ -68,6 +74,24 @@
         default:
           return cb('not a valid function');
       }
+    };
+
+    Admin.prototype.avg = function(what, params, db, cb) {
+      var _this = this;
+      return this.db.query("select sum(" + what + ") from " + db, function(result) {
+        var sum;
+        if (typeof result.rows[0].sum === 'number') {
+          sum = result.rows[0].sum;
+        } else {
+          sum = money.getNumber(result.rows[0].sum);
+        }
+        return _this.db.query("select count(" + what + ") from " + db, function(result2) {
+          var avg, count;
+          count = result2.rows[0].count;
+          avg = sum / count;
+          return cb(avg);
+        });
+      });
     };
 
     return Admin;
