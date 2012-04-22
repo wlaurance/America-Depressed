@@ -146,6 +146,34 @@
       });
     };
 
+    Rewards.prototype.redeemed = function(params, cb) {
+      var _this = this;
+      return this.db.query("select reward_id from " + this.rewards_earned + " where acct_id='" + params.acct_id + "'", function(result) {
+        var getreward, r, redeemed, reward_list, _i, _len, _results;
+        reward_list = result.rows;
+        redeemed = [];
+        getreward = function(id, cb2) {
+          var p;
+          p = {
+            type: (id < 500 ? 'sweep' : 'merch'),
+            id: id
+          };
+          return _this.getSpecific(p, function(reward) {
+            return cb2(reward);
+          });
+        };
+        _results = [];
+        for (_i = 0, _len = reward_list.length; _i < _len; _i++) {
+          r = reward_list[_i];
+          _results.push(getreward(r.reward_id, function(rinfo) {
+            redeemed.push(rinfo);
+            if (redeemed.length === reward_list.length) return cb(redeemed);
+          }));
+        }
+        return _results;
+      });
+    };
+
     return Rewards;
 
   })();

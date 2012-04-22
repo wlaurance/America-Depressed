@@ -97,5 +97,22 @@ class Rewards
               err:false
               message: 'Congrats! Reward redeemed'
 
+
+  redeemed:(params, cb)->
+    @db.query "select reward_id from " + @rewards_earned + " where acct_id='" + params.acct_id + "'", (result)=>
+      reward_list = result.rows
+      redeemed = []
+      getreward = (id, cb2) =>
+        p=
+          type: (if id < 500 then 'sweep' else 'merch')
+          id: id
+        @getSpecific p, (reward)=>
+          cb2 reward
+      for r in reward_list
+        getreward r.reward_id, (rinfo)=>
+          redeemed.push rinfo
+          if redeemed.length is reward_list.length
+            cb redeemed
+
 module.exports = Rewards
 

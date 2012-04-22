@@ -9,10 +9,10 @@ else
    {
      $profile = $_SESSION['profile'];
      $profile = $profile->{'profile'};
-     $account = account();
-     $account = $account->{'account'};
-     $type = $_GET["t"];
-     $amount = $_GET["p"];
+     $rewardsa = getRewardAccount();
+     $rewardsa = $rewardsa->{'rewards_account'};
+     $rewards_earned = getRewardsEarned($rewardsa->{'acct_id'});
+     $rewards_earned = $rewards_earned->{'rewards_earned'};
 ?>
 <html>
 	<head>
@@ -36,10 +36,22 @@ else
 
 			<div class="infotable">
 			<table border="0" class="info">
-			<tr><td><b>Name</b></td><td><b>Type</b></td><td><b>Value</b></td></tr>
-			<tr><td>Reward #1</td><td>Sweepstakes</td><td>100</td></tr>
-			<tr><td>Reward #2</td><td>Merchandise</td><td>250</td></tr>
+      <?php 
+     foreach($rewards_earned as $reward){
+       $name = $reward->{'name'};
+       $type= '';
+       if (isset($reward->{'merch_id'}))
+         $type = 'Merchandise';
+       else
+         $type = 'Sweepstakes';
 
+       $value = $reward->{'cost'};
+       if (isset($reward->{'name'}))
+       {
+        ?>
+      <tr><td><b>Name</b></td><td><b>Type</b></td><td><b>Value</b></td></tr>
+      <tr><td><?php echo $name; ?></td><td><?php echo $type; ?></td><td><?php echo $value; ?></td></tr>      
+      <?php }} ?>
 			</table> 
 			</div>
 			<br/>

@@ -142,6 +142,18 @@ function redeemReward($reward, $acct_id)
   return json_decode($result);
 }
 
+function getRewardsEarned($acct_id)
+{
+  global $url;
+  $route = $url . '/rewards/redeemed';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid=" . $_SESSION['token']."&acct_id=".$acct_id);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+}
 
 
 ?>

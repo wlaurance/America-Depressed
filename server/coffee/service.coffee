@@ -110,7 +110,12 @@ exports.createRouter = (db)->
       rewards.redeem params, (result)->
         res.send 200, {},
           rewards_message: result
-          
+
+    @post(/\/redeemed/).bind (res, params)->
+      rewards.redeemed params, (result)->
+        res.send 200, {},
+          rewards_earned: result
+
   router
 
 

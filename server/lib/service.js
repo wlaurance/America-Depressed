@@ -149,10 +149,17 @@
           });
         });
       });
-      return this.post(/\/redeem/).bind(function(res, params) {
+      this.post(/\/redeem/).bind(function(res, params) {
         return rewards.redeem(params, function(result) {
           return res.send(200, {}, {
             rewards_message: result
+          });
+        });
+      });
+      return this.post(/\/redeemed/).bind(function(res, params) {
+        return rewards.redeemed(params, function(result) {
+          return res.send(200, {}, {
+            rewards_earned: result
           });
         });
       });
