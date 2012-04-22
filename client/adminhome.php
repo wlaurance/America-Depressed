@@ -1,16 +1,12 @@
 <?php
 session_start();
 require_once('lib/api.php');
-if (isset($_SESSION['token']))
+if (isset($_SESSION['admintoken']))
   print_info();
 else
-  header("Location: login.php");
+  header("Location: adminlogin.php");
  function print_info()
    {
-     $profile = $_SESSION['profile'];
-     $profile = $profile->{'profile'};
-     $account = account();
-     $account = $account->{'account'};
 ?>
 <html>
 	<head>
@@ -27,7 +23,7 @@ else
 		
 		<div class="content">
 			<div class="title">
-      Welcome, <?php echo $profile->{'first_name'} . ' ' . $profile->{'last_name'};?>!
+      Welcome, Admin <?php echo $_SESSION['adminname']; ?>!
 			</div>
 			<br/>
 			<br/>
@@ -50,7 +46,7 @@ else
 			<br/>
 			<table border="0">
 			<tr>
-			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			<td><form action="adminlogout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 			</tr>
 			</table>
 

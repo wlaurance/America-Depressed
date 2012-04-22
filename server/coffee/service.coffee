@@ -40,8 +40,9 @@ exports.createRouter = (db)->
           notLoggedin res
 
     @get(/\/logout/).bind (res, params) ->
-      res.send 200, {},
-        message:'You have successfully logged out'
+      auth.logout params.sessionid, ->
+        res.send 200, {},
+          message:'You have successfully logged out'
 
   router.path /\/time/, ->
     @get().bind (res) ->
@@ -89,6 +90,16 @@ exports.createRouter = (db)->
             admintoken: adminsession
         else
           needsCredentials res
+
+    @get(/\/logout/).bind (res, params)->
+      admin.logout params.sessionid, ->
+        res.send 200, {},
+          message: 'You are now logged out'
+
+    @get(/\/zip/).bind (res)->
+      admin.getAllZips (zips)->
+        res.send 200, {},
+          zip: zips
 
   router.path /\/rewards/, ->
     @get(/\/range/).bind (res, params)->

@@ -154,6 +154,52 @@ function getRewardsEarned($acct_id)
   curl_close($ch);
   return json_decode($result);
 }
+//Admin functions
+function adminlogin($username, $password)
+{
+  global $url;
+  $route = $url . '/admin';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "username={$username}&password={$password}");
+  $result = curl_exec($ch);
+  curl_close($ch);
+  $sessionid = json_decode($result);
+  if (isset($sessionid->{'error_message'}))
+    return $sessionid;
+  else {
+    $_SESSION['admintoken'] = $sessionid->{'admintoken'};
+    $_SESSION['adminname'] = $username;
+  }
+}
+
+function adminlogout()
+{
+  global $url;
+  $route = $url . '/admin/logout';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route . '?sessionid=' . $_SESSION['admintoken']);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  unset($_SESSION['adminname']);
+  unset($_SESSION['admintoken']);
+  return json_decode($result);
+}
+
+function getAllZips()
+{
+  global $url;
+  $route = $url . '/admin/zip';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  $z = json_decode($result);
+  return $z->{'zip'};
+}
 
 
 ?>

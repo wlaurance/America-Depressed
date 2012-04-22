@@ -10,7 +10,6 @@
       if (isset($profile->{'error_message'}))
         makeForm($profile->{'error_message'});
       else {
-        $_SESSION['profile'] = $profile;
         header('Location: adminhome.php');
       }
     } else {

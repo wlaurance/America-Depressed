@@ -1,16 +1,23 @@
 <?php
 session_start();
 require_once('lib/api.php');
-if (isset($_SESSION['token']))
-  print_info();
+if (isset($_SESSION['admintoken']))
+{
+  if ($_SERVER['REQUEST_METHOD'] == 'POST')
+  {
+    
+  }
+  else
+  {
+    print_info();
+  }
+}
 else
-  header("Location: login.php");
+  header("Location: adminlogin.php");
  function print_info()
-   {
-     $profile = $_SESSION['profile'];
-     $profile = $profile->{'profile'};
-     $account = account();
-     $account = $account->{'account'};
+ {
+   $zips = getAllZips();
+   
 ?>
 <html>
 	<head>
@@ -27,14 +34,14 @@ else
 		
 		<div class="content">
 			<div class="title">
-      Welcome, <?php echo $profile->{'first_name'} . ' ' . $profile->{'last_name'};?>!
+      Welcome, Admin <?php echo $_SESSION['adminname']; ?>!
 			</div>
 			<br/>
 			<br/>
 			<div class="infotable">
 			
 			<h2>Please select one option from each section.</h2>
-			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 			<table border="1" class="info">
 				<tr>
         		<td><p style="font-size:large; text-align:center; font-weight:bold; 
@@ -65,8 +72,12 @@ else
         			text-decoration:underline;">Zip Code</p>
         		<center><select name="zip">
 					<option value="ALL">All</option>
-					<option value="111111">First Zip Here</option>
-					<option value="222222">Second Zip Here</option>
+          <?php 
+            foreach($zips as $zc)
+            {
+?>
+            <option value="<?php echo $zc; ?>"><?php echo $zc; ?></option>
+            <?php } ?>
 				</select></center>
         		
         		<p style="font-size:large; text-align:center; font-weight:bold;">

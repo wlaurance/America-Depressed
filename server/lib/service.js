@@ -59,8 +59,10 @@
         });
       });
       return this.get(/\/logout/).bind(function(res, params) {
-        return res.send(200, {}, {
-          message: 'You have successfully logged out'
+        return auth.logout(params.sessionid, function() {
+          return res.send(200, {}, {
+            message: 'You have successfully logged out'
+          });
         });
       });
     });
@@ -114,7 +116,7 @@
       });
     });
     router.path(/\/admin/, function() {
-      return this.post().bind(function(res, params) {
+      this.post().bind(function(res, params) {
         if (!params.username || !params.password) needsCredentials(res);
         return admin.auth(params.username, params.password, function(adminsession) {
           if (adminsession) {
@@ -124,6 +126,20 @@
           } else {
             return needsCredentials(res);
           }
+        });
+      });
+      this.get(/\/logout/).bind(function(res, params) {
+        return admin.logout(params.sessionid, function() {
+          return res.send(200, {}, {
+            message: 'You are now logged out'
+          });
+        });
+      });
+      return this.get(/\/zip/).bind(function(res) {
+        return admin.getAllZips(function(zips) {
+          return res.send(200, {}, {
+            zip: zips
+          });
         });
       });
     });

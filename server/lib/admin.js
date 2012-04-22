@@ -8,6 +8,7 @@
     function Admin(db) {
       this.db = db;
       this.admindb = 'admin';
+      this.address = 'address';
       this.session = new auth(this.db, this.admindb);
     }
 
@@ -27,7 +28,24 @@
       });
     };
 
-    Admin.prototype.getAllCustomers = function() {};
+    Admin.prototype.logout = function(sessionid, cb) {
+      return auth.logout(sessionid, function() {
+        return cb();
+      });
+    };
+
+    Admin.prototype.getAllZips = function(cb) {
+      return this.db.query("select zip from " + this.address, function(result) {
+        var zip, zips, _i, _len, _ref;
+        zips = [];
+        _ref = result.rows;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          zip = _ref[_i];
+          zips.push(zip.zip);
+        }
+        return cb(zips);
+      });
+    };
 
     return Admin;
 
