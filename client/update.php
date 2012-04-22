@@ -1,3 +1,10 @@
+<?php
+function print_info()
+{
+   $zips = getAllZips();
+   
+?>
+
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/acctinfo.css" />
@@ -26,7 +33,14 @@
         		<td>Last Name:</td><td><input type="text" name="last_name" size="25" /></td>
 				</tr>
 				<tr>
-        		<td>Zip:</td><td><input type="text" name="zip" size="25" /></td>
+        		<td>Zip:</td><td><select name="zip">
+					<option value="ALL">All</option>
+          <?php 
+            foreach($zips as $zc)
+            {
+?>
+            <option value="<?php echo $zc; ?>"><?php echo $zc; ?></option>
+            <?php } ?></td>
 				</tr>
 			</table> 
 			<table border="0">
@@ -42,3 +56,6 @@
 		</center>
 	</body>
 </html>
+<?php 
+}
+?>
