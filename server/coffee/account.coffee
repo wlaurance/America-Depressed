@@ -3,7 +3,7 @@ winston = require 'winston'
 money = require './money'
 
 class Account
-  constructor:(@db, @auth)->
+  constructor:(@db, @auth, @rewards)->
     @dbname = 'account_active'
     @chargedb = 'charges'
     @paymentdb = 'payments'
@@ -49,11 +49,14 @@ class Account
             amount = params.amount
             date = @transDate params.charge_date
             values = "(" + accountnumber + "," + transnum + ",'" + date + "','$" + amount + "')"
-            @db.query "insert into " + @paymentdb + " (account_num, payment_num, payment_date, payment_amount) VALUES " + values, (resutl)=>
+            @db.query "insert into " + @paymentdb + " (account_num, payment_num, payment_date, payment_amount) VALUES " + values, (result)=>
               @getCurrentBalance accountnumber, (oldbalance)=>
                 newbalance = Number(oldbalance) - Number(money.getNumber amount)
-                @updateBalance newbalance, accountnumber, (result)=>
+                @updateBalance newbalance, accountnumber, (result2)=>
                   cb result
+                  params.points = Math.floor amount/100
+                  @rewards.updatePoints params, (r3)=>
+                
 
         else
           cb 'error need amount'

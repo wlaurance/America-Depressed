@@ -11,6 +11,7 @@
       this.auth = auth;
       this.updateAccount = __bind(this.updateAccount, this);
       this.updateReward = __bind(this.updateReward, this);
+      this.updatePoints = __bind(this.updatePoints, this);
       this.getSpecific = __bind(this.getSpecific, this);
       this.merch = 'reward_merch';
       this.sweep = 'reward_sweep';
@@ -62,6 +63,15 @@
             });
           });
         }
+      });
+    };
+
+    Rewards.prototype.updatePoints = function(params, cb) {
+      var _this = this;
+      return this.account(params, function(reward_account) {
+        return _this.db.query("update " + _this.reward_account + " set points='" + (Number(reward_account.points) + Number(params.points)) + "' where acct_id='" + reward_account.acct_id + "'", function(result) {
+          return cb(result);
+        });
       });
     };
 

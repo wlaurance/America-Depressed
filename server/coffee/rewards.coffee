@@ -42,6 +42,10 @@ class Rewards
          @db.query "select * from " + @reward_account + " where acct_id='" + result.rows[0].acct_id + "'", (result)=>
            cb result.rows[0]
 
+  updatePoints:(params, cb)=>
+    @account params, (reward_account)=>
+      @db.query "update " + @reward_account + " set points='" + (Number(reward_account.points) + Number(params.points)) + "' where acct_id='" + reward_account.acct_id + "'", (result)=>
+        cb result
 
   redeem:(params, cb)->
     winston.info JSON.stringify params

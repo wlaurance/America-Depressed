@@ -19,9 +19,9 @@
     var router;
     auth = new auth(db);
     profile = new profile(db, auth);
-    account = new account(db, auth);
-    admin = new admin(db);
     rewards = new rewards(db, auth);
+    account = new account(db, auth, rewards);
+    admin = new admin(db);
     router = new journey.Router({
       strict: false,
       strictUrls: false,

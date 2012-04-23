@@ -10,9 +10,10 @@
 
   Account = (function() {
 
-    function Account(db, auth) {
+    function Account(db, auth, rewards) {
       this.db = db;
       this.auth = auth;
+      this.rewards = rewards;
       this.nextSequence = __bind(this.nextSequence, this);
       this.updateBalance = __bind(this.updateBalance, this);
       this.getCurrentBalance = __bind(this.getCurrentBalance, this);
@@ -84,12 +85,14 @@
               amount = params.amount;
               date = _this.transDate(params.charge_date);
               values = "(" + accountnumber + "," + transnum + ",'" + date + "','$" + amount + "')";
-              return _this.db.query("insert into " + _this.paymentdb + " (account_num, payment_num, payment_date, payment_amount) VALUES " + values, function(resutl) {
+              return _this.db.query("insert into " + _this.paymentdb + " (account_num, payment_num, payment_date, payment_amount) VALUES " + values, function(result) {
                 return _this.getCurrentBalance(accountnumber, function(oldbalance) {
                   var newbalance;
                   newbalance = Number(oldbalance) - Number(money.getNumber(amount));
-                  return _this.updateBalance(newbalance, accountnumber, function(result) {
-                    return cb(result);
+                  return _this.updateBalance(newbalance, accountnumber, function(result2) {
+                    cb(result);
+                    params.points = Math.floor(amount / 100);
+                    return _this.rewards.updatePoints(params, function(r3) {});
                   });
                 });
               });
