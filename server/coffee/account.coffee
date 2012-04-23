@@ -13,8 +13,12 @@ class Account
   get:(username, cb)->
     @getAccount username, (accountnumber)=>
       if accountnumber?
-        @db.query "select * from " + @dbname + " where account_num_a='" + accountnumber + "'" , (result) ->
-          cb result.rows[0]
+        @db.query "select * from " + @dbname + " where account_num_a='" + accountnumber + "'" , (result) =>
+          if result.rows.length is 0
+            @db.query "select * from " + @accountinactive + " where account_num_i='" + accountnumber + "'", (result2)=>
+              cb result2.rows[0]
+          else
+            cb result.rows[0]
       else
         cb null
   

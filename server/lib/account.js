@@ -29,7 +29,13 @@
       return this.getAccount(username, function(accountnumber) {
         if (accountnumber != null) {
           return _this.db.query("select * from " + _this.dbname + " where account_num_a='" + accountnumber + "'", function(result) {
-            return cb(result.rows[0]);
+            if (result.rows.length === 0) {
+              return _this.db.query("select * from " + _this.accountinactive + " where account_num_i='" + accountnumber + "'", function(result2) {
+                return cb(result2.rows[0]);
+              });
+            } else {
+              return cb(result.rows[0]);
+            }
           });
         } else {
           return cb(null);

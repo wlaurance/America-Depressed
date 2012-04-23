@@ -6,7 +6,6 @@
     if ($_POST['username'] != '' && $_POST['password'] != '')
     {
       $profile = login($_POST['username'], $_POST['password']);
-      var_dump($profile);
       if (isset($profile->{'error_message'}))
         makeForm($profile->{'error_message'});
       else {
