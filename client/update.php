@@ -1,3 +1,30 @@
+<?php
+session_start();
+require_once('lib/api.php');
+if (isset($_SESSION['token']))
+{
+  if ($_SERVER['REQUEST_METHOD'] == 'POST')
+  {
+    updateAccountInfo($_POST);
+    header("Location: acctinfo.php");
+  }
+  else 
+  {
+    print_info();
+  }
+}
+else
+  header("Location: login.php");
+ function print_info()
+   {
+     $profile = $_SESSION['profile'];
+     $profile = $profile->{'profile'};
+     $account = account();
+     $account = $account->{'account'};
+     $reward = getRewardAccount();
+     $reward = $reward->{'rewards_account'};
+     $zips = getAllZips();
+?>
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/acctinfo.css" />
@@ -17,7 +44,8 @@
 			</div>
 			<br/>
 			<br/>
-			<div class="payment">
+      <div class="payment">
+      <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 			<table border="0" class="info">
 				<tr>
         		<td>First Name:</td><td><input type="text" name="first_name" size="25" /></td>
@@ -27,12 +55,19 @@
 				</tr>
 				<tr>
         		<td>Zip:</td><td><select name="zip">
-					<option value="ALL">All</option></td>
+            <?php 
+            foreach($zips as $zc)
+            {
+            ?>
+            <option value="<?php echo $zc; ?>"><?php echo $zc; ?></option>
+            <?php } ?>
+           </td> 
+          </select>
 				</tr>
 			</table> 
 			<table border="0">
 			<tr><td>
-			<form action="acctinfo.php" method="get"><input type="submit" value="Update" /></form>
+		<input type="submit" value="Update" /></form>
 			</td></tr>
 			</table>
 			</div>
@@ -43,4 +78,6 @@
 		</center>
 	</body>
 </html>
-
+<?php
+   }
+?>
