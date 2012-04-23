@@ -36,7 +36,7 @@ else
 			<br/>
 			<br/>
 			<div class="infotable">
-			
+			<input type="hidden" name="d" value="a">
 			<h2>What would you like to do?</h2>
 			
 			<form action="adminlist.php" method="GET">
