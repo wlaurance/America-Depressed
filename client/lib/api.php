@@ -1,6 +1,18 @@
 <?php
 
 $url = 'http://bg6:8000';
+
+function encodeparams($post)
+{
+  foreach($post as $key => $value)
+  {
+    $post[$key] = urlencode($value);
+  }
+
+  return $post;
+}
+
+
 function getTime() 
 {
   global $url;
@@ -49,8 +61,10 @@ function updateAccountInfo($post)
 {
   global $url;
   $route = $url . '/profile/update';
+  $post =  encodeparams($post);
+  $route = $route ."?sessionid={$_SESSION['token']}&fn={$post['first_name']}&ln={$post['last_name']}&zip={$post['zip']}";
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $route . "?sessionid={$_SESSION['token']}&fn={$post['first_name']}&ln={$post['last_name']}&zip={$post['zip']}");
+  curl_setopt($ch, CURLOPT_URL, $route);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   $result = curl_exec($ch);
   curl_close($ch);
@@ -87,6 +101,7 @@ function makeCharge($post)
 {
   global $url;
   $route = $url . '/account/charge';
+  $post = encodeparams($post);
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $route);
   curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid=" . $_SESSION['token']. "&date='".$post['date']."'&accountnumber='". $post['accountnumber']."'&amount=".$post['amount']."&location='".$post['location']."'");
@@ -101,6 +116,7 @@ function makePayment($post)
 {
   global $url;
   $route = $url . '/account/payment';
+  $post = encodeparams($post);
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $route);
   curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid=" . $_SESSION['token']. "&date='".$post['date']."'&accountnumber='". $post['accountnumber']."'&amount=".$post['amount']);
@@ -215,7 +231,7 @@ function getAllZips()
 
 function processAdminRequest($post)
 {
-  var_dump($post);
+  $post = encodeparams($post);
   $zip = $post['zip'];
   $gender = $post['gender'];
   $state = $post['state'];
@@ -229,7 +245,6 @@ function processAdminRequest($post)
   $result = curl_exec($ch);
   curl_close($ch);
   $z = json_decode($result);
-  var_dump($z);
   return $z;
 }
 
