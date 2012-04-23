@@ -1,7 +1,9 @@
 (function() {
-  var Money, winston;
+  var Money, accounting, winston;
 
   winston = require('winston');
+
+  accounting = require('accounting');
 
   Money = (function() {
 
@@ -18,12 +20,13 @@
     };
 
     Money.prototype.getNumber = function(input) {
-      var a;
       winston.info('input ' + input);
       if (input === null || input === void 0) return null;
-      a = input.replace(/[$,]/g, '');
-      a = Number(a);
-      return a.toFixed(2);
+      return accounting.unformat(input);
+    };
+
+    Money.prototype.make = function(input) {
+      return accounting.formatMoney(input);
     };
 
     return Money;

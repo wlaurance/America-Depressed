@@ -10,7 +10,8 @@
     "http-console": ">= 0.6.0",
     "optimist": ">= 0.1.5",
     "winston": ">= 0.2.1",
-    "pg": ">= 0.6.14"
+    "pg": ">= 0.6.14",
+    "accounting": ">= 0.3.2"
   },
   "bin": {
     "america-depressed": "./bin/server"

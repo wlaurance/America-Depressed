@@ -1,4 +1,5 @@
 winston = require 'winston'
+accounting = require 'accounting'
 
 class Money
   constructor:()->
@@ -14,8 +15,9 @@ class Money
     winston.info 'input ' + input
     if input is null or input is undefined
       return null
-    a = input.replace /[$,]/g, ''
-    a = Number a
-    a.toFixed 2
+    accounting.unformat input
+
+  make:(input)->
+    return accounting.formatMoney input
 
 module.exports = do new Money

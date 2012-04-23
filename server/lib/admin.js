@@ -99,7 +99,11 @@
           var avg, count;
           count = result2.rows[0].count;
           avg = sum / count;
-          return cb(avg);
+          if (what === 'balance') {
+            return cb(money.make(avg));
+          } else {
+            return cb(avg);
+          }
         });
       });
     };
@@ -129,34 +133,26 @@
     };
 
     Admin.prototype.countacc = function(what, params, db, cb) {
-      var first, second, sum, total;
-      first = false;
-      second = false;
-      total = 0;
-      sum = function(incomming) {
-        total += incomming;
-        if (first) {
-          second = true;
-        } else {
-          first = true;
-        }
-        if (first && second) return cb(total);
-      };
-      this.count('account_num_a', params, this.accountinfo, sum);
-      return this.count('account_num_i', params, this.accountinactive, sum);
+      var _this = this;
+      return this.count('account_num_a', params, this.accountinfo, function(count1) {
+        return _this.count('account_num_i', params, _this.accountinactive, function(count2) {
+          return cb(count1 + count2);
+        });
+      });
     };
 
     Admin.prototype.count = function(what, params, db, cb) {
       var _this = this;
-      db = this.processDBClause(params, db, what === 'balance');
+      db = this.processDBClause(params, db, what === 'balance' || what === 'account_num_a' || what === 'account_num_i', what === 'account_num_i');
       return this.db.query("select count(" + what + ") from " + db, function(result) {
         return cb(result.rows[0].count);
       });
     };
 
-    Admin.prototype.processDBClause = function(params, db, involvesAccounts) {
-      var bstr, cstr, genderspecific, statespecific, zipspecific;
+    Admin.prototype.processDBClause = function(params, db, involvesAccounts, inactive) {
+      var account, astr, bstr, cstr, genderspecific, statespecific, zipspecific;
       if (involvesAccounts == null) involvesAccounts = false;
+      if (inactive == null) inactive = false;
       winston.info(JSON.stringify(params));
       genderspecific = false;
       statespecific = false;
@@ -167,14 +163,20 @@
         statespecific = true;
         zipspecific = false;
       }
-      bstr = "customer, debtor, address where customer.ssn = debtor.ssn and account_active.account_num_a = debtor.account_num and customer.zip = address.zip";
-      cstr = "customer, debtor where customer.ssn = debtor.ssn and account_active.account_num_a = debtor.account_num";
+      if (inactive) {
+        account = 'account_inactive.account_num_i';
+      } else {
+        account = 'account_active.account_num_a';
+      }
+      astr = "customer, address where customer.zip = address.zip";
+      bstr = "customer, debtor, address where customer.ssn = debtor.ssn and " + account + " = debtor.account_num and customer.zip = address.zip";
+      cstr = "customer, debtor where customer.ssn = debtor.ssn and " + account + " = debtor.account_num";
       if (!genderspecific && !statespecific && !zipspecific) return db;
       if (genderspecific && statespecific && involvesAccounts) {
         return db + ", " + bstr + " and address.state='" + params.state + "' and customer.gender='" + params.gender + "'";
       }
       if (genderspecific && statespecific) {
-        return bstr + " and address.state ='" + params.state + "' and customer.gender='" + params.gender + "'";
+        return astr + " and address.state='" + params.state + "' and customer.gender='" + params.gender + "'";
       }
       if (genderspecific && zipspecific && involvesAccounts) {
         return db + ", " + cstr + " and customer.zip ='" + params.zip + "' and customer.gender='" + params.gender + "'";
@@ -185,8 +187,18 @@
       if (genderspecific && involvesAccounts) {
         return db + ", " + cstr + " and customer.gender='" + params.gender + "'";
       }
-      if (genderspecific) {
-        return "customer where gender='" + params.gender + "'";
+      if (genderspecific) return "customer where gender='" + params.gender + "'";
+      if (statespecific && involvesAccounts) {
+        return db + ", " + bstr + " and address.state='" + params.state + "'";
+      }
+      if (statespecific) {
+        return astr + " where address.state='" + params.state + "'";
+      }
+      if (zipspecific && involvesAccounts) {
+        return db + ", " + bstr + " and customer.zip='" + params.zip + "'";
+      }
+      if (zipspecific) {
+        return "customer where zip='" + params.zip + "'";
       } else {
         return db;
       }
