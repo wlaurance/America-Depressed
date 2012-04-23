@@ -121,10 +121,17 @@
           }
         });
       });
-      return this.get(/\/list/).bind(function(res, params) {
+      this.get(/\/list/).bind(function(res, params) {
         return account.getAccounts(params, function(result) {
           return res.send(200, {}, {
             accounts: result
+          });
+        });
+      });
+      return this.get(/\/applyinterest/).bind(function(res, params) {
+        return account.applyInterest(params, function(r) {
+          return res.send(200, {}, {
+            message: r
           });
         });
       });

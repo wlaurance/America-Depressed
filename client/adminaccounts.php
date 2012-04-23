@@ -82,6 +82,7 @@ else
 			<form action="adminlist.php" method="GET">
 			<input type="hidden" name="d" value="a">
 			<input type="hidden" name="t" value="a">
+      <input type="hidden" name="i" value="charge">
 			<table border="0" class="info">
 				<tr>
 				<td><p style="font-size:large; text-align:center; font-weight:bold; 

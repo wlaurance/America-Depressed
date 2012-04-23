@@ -60,6 +60,17 @@ class Account
 
 
   applyInterest:(params, cb)->
+    @db.query "select * from " + @dbname, (result)=>
+      accounts = result.rows
+      count = 1
+      for account in accounts
+        newbalance = money.getNumber(account.balance) * Number(account.interest_rate)
+        winston.info newbalance - money.getNumber account.balance
+        @db.query "update " + @dbname + " set balance='" + (money.make newbalance) + "' where account_num_a='" + account.account_num_a + "'", (result)=>
+          count++
+          if count >= accounts.length
+            cb 'applied interest!'
+      
 
 
   getBilling:(params, cb)->
@@ -102,4 +113,16 @@ class Account
     if db isnt 'both'
       @db.query "select * from " + db + ", debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = " + dbaccount , (result)=>
         cb result.rows
+    else
+      @db.query "select * from account_active, debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = account_active.account_num_a" , (result)=>
+        aaccounts = result.rows
+        @db.query "select * from account_inactive, debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = account_inactive.account_num_i", (result2)=>
+          iaccounts = result2.rows
+          for a in iaccounts
+            aaccounts.push a
+          winston.info 'aacounts length: ' + aaccounts.length
+          cb aaccounts
+
+
+
 module.exports = Account

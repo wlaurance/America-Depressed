@@ -191,9 +191,7 @@
       if (statespecific && involvesAccounts) {
         return db + ", " + bstr + " and address.state='" + params.state + "'";
       }
-      if (statespecific) {
-        return astr + " where address.state='" + params.state + "'";
-      }
+      if (statespecific) return astr + " and address.state='" + params.state + "'";
       if (zipspecific && involvesAccounts) {
         return db + ", " + bstr + " and customer.zip='" + params.zip + "'";
       }

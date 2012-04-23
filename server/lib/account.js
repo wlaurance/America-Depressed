@@ -101,7 +101,25 @@
       });
     };
 
-    Account.prototype.applyInterest = function(params, cb) {};
+    Account.prototype.applyInterest = function(params, cb) {
+      var _this = this;
+      return this.db.query("select * from " + this.dbname, function(result) {
+        var account, accounts, count, newbalance, _i, _len, _results;
+        accounts = result.rows;
+        count = 1;
+        _results = [];
+        for (_i = 0, _len = accounts.length; _i < _len; _i++) {
+          account = accounts[_i];
+          newbalance = money.getNumber(account.balance) * Number(account.interest_rate);
+          winston.info(newbalance - money.getNumber(account.balance));
+          _results.push(_this.db.query("update " + _this.dbname + " set balance='" + (money.make(newbalance)) + "' where account_num_a='" + account.account_num_a + "'", function(result) {
+            count++;
+            if (count >= accounts.length) return cb('applied interest!');
+          }));
+        }
+        return _results;
+      });
+    };
 
     Account.prototype.getBilling = function(params, cb) {};
 
@@ -156,6 +174,21 @@
       if (db !== 'both') {
         return this.db.query("select * from " + db + ", debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = " + dbaccount, function(result) {
           return cb(result.rows);
+        });
+      } else {
+        return this.db.query("select * from account_active, debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = account_active.account_num_a", function(result) {
+          var aaccounts;
+          aaccounts = result.rows;
+          return _this.db.query("select * from account_inactive, debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = account_inactive.account_num_i", function(result2) {
+            var a, iaccounts, _i, _len;
+            iaccounts = result2.rows;
+            for (_i = 0, _len = iaccounts.length; _i < _len; _i++) {
+              a = iaccounts[_i];
+              aaccounts.push(a);
+            }
+            winston.info('aacounts length: ' + aaccounts.length);
+            return cb(aaccounts);
+          });
         });
       }
     };
