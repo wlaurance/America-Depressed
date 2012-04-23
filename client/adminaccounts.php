@@ -40,7 +40,7 @@ else
 			<h2>What would you like to do?</h2>
 			
 			<form action="adminlist.php" method="GET">
-			<input type="hidden" name="d" value="a">
+
 			<table border="0" class="info">
 				<tr>
         		<td><p style="font-size:large; text-align:center; font-weight:bold; 
@@ -76,6 +76,18 @@ else
         		<tr><td>Account Number: <input type="text" name="account" size="25" /></td>
         		</tr>
 				<tr><td><center><input type="submit" value="Update" /></center></td></tr>
+			</table>
+			</form>
+			
+			<form action="adminlist.php" method="GET">
+			<input type="hidden" name="d" value="a">
+			<input type="hidden" name="t" value="a">
+			<table border="0" class="info">
+				<tr>
+				<td><p style="font-size:large; text-align:center; font-weight:bold; 
+        			text-decoration:underline;">Charge Interest to Accounts</p></td>
+        		</tr>
+				<tr><td><center><input type="submit" value="Charge" /></center></td></tr>
 			</table>
 			</form>
 			
