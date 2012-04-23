@@ -87,7 +87,7 @@ function printcoltitles($type, $want){
 <?php
     foreach($accounts as $account){
 ?>
-  <tr><td><?php echo $account->{'account_num_a'}; ?></td><td><?php echo $account->{'first_name'};?></td><td><?php echo $account->{'last_name'};?></td><td><?php echo $account->{'ssn'}; ?></td><td><?php echo $account->{'balance'}; ?></td></tr>
+  <tr><td><?php echo $account->{'account_num'}; ?></td><td><?php echo $account->{'first_name'};?></td><td><?php echo $account->{'last_name'};?></td><td><?php echo $account->{'ssn'}; ?></td><td><?php echo $account->{'balance'}; ?></td></tr>
 <?php }
   }
     
