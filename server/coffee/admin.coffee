@@ -127,7 +127,7 @@ class Admin
     if statespecific and involvesAccounts
       return db + ", " + bstr + " and address.state='" + params.state + "'"
     if statespecific 
-      return astr + " where address.state='" + params.state + "'"
+      return astr + " and address.state='" + params.state + "'"
     if zipspecific and involvesAccounts
       return db + ", " + bstr + " and customer.zip='" + params.zip + "'"
     if zipspecific

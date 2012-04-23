@@ -101,7 +101,24 @@
       });
     };
 
-    Account.prototype.applyInterest = function(params, cb) {};
+    Account.prototype.applyInterest = function(params, cb) {
+      var _this = this;
+      return this.db.query("select * from " + this.dbname, function(result) {
+        var account, accounts, count, newbalance, _i, _len, _results;
+        accounts = result.rows;
+        count = 0;
+        _results = [];
+        for (_i = 0, _len = accounts.length; _i < _len; _i++) {
+          account = accounts[_i];
+          newbalance = money.getNumber(account.balance) * Number(account.interest_rate);
+          _results.push(_this.db.query("update " + _this.dbname + " set balance='" + money.make(newbalance + "' where account_num_a='" + account.account_num_a + "'", function(result) {
+            count++;
+            if (count >= accounts.length) return cb('applied interest!');
+          })));
+        }
+        return _results;
+      });
+    };
 
     Account.prototype.getBilling = function(params, cb) {};
 
