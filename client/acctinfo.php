@@ -61,31 +61,44 @@ else
 				</tr>
 				<tr>
         <td>Account Number:</td><td><?php 
-     if(isset($account->{'account_num_a'}))
-       echo $account->{'account_num_a'};
-     else
-       echo $account->{'account_num_i'};
-     ?></td>
+				 if(isset($account->{'account_num_a'}))
+				   echo $account->{'account_num_a'};
+				 else
+				   echo $account->{'account_num_i'};
+				 ?></td>
         </tr>
+        <?php if(isset($account->{'account_num_a'})) { ?>
+        <tr>
+        <td>Balance:</td><td><?php echo $account->{'balance'}; ?></td>
+        </tr>
+        <?php } ?>
+        <tr>
         <td>Reward Account Number:</td><td><?php echo $reward->{'acct_id'}; ?></td>
         </tr>
         <tr>
         <td>Active?:</td><td><?php 
-        if(isset($account->{'account_num_a'}))
-          echo 'Y';
-        else
-          echo 'N';
-    ?></td>
-				</tr>
+				if(isset($account->{'account_num_a'}))
+				  echo 'Y';
+				else
+				  echo 'N';
+			?></td>
+		</tr>
 			</table> 
 			</div>
 			<br/>
 			<table border="0">
-			<tr><td><form action="update.php" method="get"><input type="submit" value="Update" /></form></td>
-			<td><form action="payment.php" method="get"><input type="submit" value="Payments" /></form></td>
-			<td><form action="charge.php" method="get"><input type="submit" value="Charges" /></form></td>
-			<td><form action="rewardstore.php" method="get"><input type="submit" value="Reward Store" /></form></td>
-			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			<tr><td><form action="update.php" method="get"><input type="submit" value="Update" />
+					</form></td>
+			<?php if(isset($account->{'account_num_a'})) { ?>
+			<td><form action="payment.php" method="get"><input type="submit" value="Payments" />
+					</form></td>
+			<td><form action="charge.php" method="get"><input type="submit" value="Charges" />
+					</form></td> 
+			<?php } ?>
+			<td><form action="rewardstore.php" method="get"><input type="submit" value="Reward Store" />
+					</form></td>
+			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" />
+					</form></td>
 			</tr>
 			</table>
 

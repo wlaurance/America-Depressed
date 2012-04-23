@@ -17,6 +17,7 @@ else
  function print_info()
    {	
 	$type = $_GET["t"];
+	$acct = $_GET["account"];
 ?>
 
 <html>
@@ -36,9 +37,9 @@ else
 			<div class="title">
 				<?php
 					if($type=="a")
-						echo "Updating Account Number: 4264237891688888825791";
+						echo "Updating Account Number: " . $acct;
 					else
-						echo "Updating Reward Number: 738591327510";
+						echo "Updating Reward Number: " . $acct;
 				?>
 			</div>
 			<br/>
@@ -61,7 +62,7 @@ else
 			<br/>
 			<table border="0"><tr>
 				<td><form action="adminhome.php" method="get"><input type="submit" value="Home" /></form></td>
-				<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+				<td><form action="adminlogout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 				</tr>
 			</table>
 			<br/>

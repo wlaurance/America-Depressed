@@ -39,23 +39,25 @@ else
 			
 			<h2>What would you like to do?</h2>
 			
-			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+			<form action="adminlist.php" method="GET">
+			<input type="hidden" name="d" value="r">
 			<table border="0" class="info">
 				<tr>
         		<td><p style="font-size:large; text-align:center; font-weight:bold; 
         			text-decoration:underline;">List Rewards</p></td>
 				</tr>
 				<tr>
-        		<td><center><input type="radio" name="rewards" value="sweep">Sweepstakes</input>
-				<input type="radio" name="rewards" value="merch">Merchandise</input>
-				<input type="radio" name="rewards" value="ALL" checked> All</input></center></td>
+        		<td><center><input type="radio" name="t" value="s">Sweepstakes</input>
+				<input type="radio" name="t" value="m">Merchandise</input>
+				<input type="radio" name="t" value="br" checked> All</input></center></td>
 				</tr>
 				<tr><td><center><input type="submit" value="Submit" /></center></td></tr>
 			</table>
 			</form>
 			
-			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+			<form action="adminadd.php" method="GET">
 			<table border="0" class="info">
+			<input type="hidden" name="t" value="r">
 				<tr>
 				<td><p style="font-size:large; text-align:center; font-weight:bold; 
         			text-decoration:underline;">Create a Reward</p></td>
@@ -64,13 +66,14 @@ else
 			</table>
 			</form>
 			
-			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+			<form action="adminupdate.php" method="GET">
+			<input type="hidden" name="t" value="r">
 			<table border="0" class="info">
 				<tr>
 				<td><p style="font-size:large; text-align:center; font-weight:bold; 
         			text-decoration:underline;">Update a Reward</p></td>
         		</tr>
-        		<tr><td>Reward Number: <input type="text" name="reward_num" size="25" /></td>
+        		<tr><td>Reward Number: <input type="text" name="account" size="25" /></td>
         		</tr>
 				<tr><td><center><input type="submit" value="Update" /></center></td></tr>
 			</table>
@@ -81,7 +84,7 @@ else
 			<table border="0">
 			<tr>
 			<td><form action="adminhome.php" method="get"><input type="submit" value="Home" /></form></td>
-			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			<td><form action="adminlogout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 			</tr>
 			</table>
 

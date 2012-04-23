@@ -39,22 +39,24 @@ else
 			
 			<h2>What would you like to do?</h2>
 			
-			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+			<form action="adminlist.php" method="GET">
+			<input type="hidden" name="d" value="a">
 			<table border="0" class="info">
 				<tr>
         		<td><p style="font-size:large; text-align:center; font-weight:bold; 
         			text-decoration:underline;">List Accounts</p></td>
 				</tr>
 				<tr>
-        		<td><center><input type="radio" name="accts" value="active">Active</input>
-				<input type="radio" name="accts" value="inactive"> Inactive</input>
-				<input type="radio" name="accts" value="ALL" checked> All</input></center></td>
+        		<td><center><input type="radio" name="t" value="a">Active</input>
+				<input type="radio" name="t" value="i"> Inactive</input>
+				<input type="radio" name="t" value="ba" checked> All</input></center></td>
 				</tr>
 				<tr><td><center><input type="submit" value="Submit" /></center></td></tr>
 			</table>
 			</form>
 			
-			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+			<form action="adminadd.php?" method="GET">
+			<input type="hidden" name="t" value="a">
 			<table border="0" class="info">
 				<tr>
 				<td><p style="font-size:large; text-align:center; font-weight:bold; 
@@ -64,13 +66,14 @@ else
 			</table>
 			</form>
 			
-			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+			<form action="adminupdate.php" method="GET">
+			<input type="hidden" name="t" value="a">
 			<table border="0" class="info">
 				<tr>
 				<td><p style="font-size:large; text-align:center; font-weight:bold; 
         			text-decoration:underline;">Update an Account</p></td>
         		</tr>
-        		<tr><td>Account Number: <input type="text" name="account_num" size="25" /></td>
+        		<tr><td>Account Number: <input type="text" name="account" size="25" /></td>
         		</tr>
 				<tr><td><center><input type="submit" value="Update" /></center></td></tr>
 			</table>
@@ -81,7 +84,7 @@ else
 			<table border="0">
 			<tr>
 			<td><form action="adminhome.php" method="get"><input type="submit" value="Home" /></form></td>
-			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			<td><form action="adminlogout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 			</tr>
 			</table>
 
