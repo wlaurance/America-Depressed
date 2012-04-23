@@ -207,10 +207,17 @@
           });
         });
       });
-      return this.post(/\/redeemed/).bind(function(res, params) {
+      this.post(/\/redeemed/).bind(function(res, params) {
         return rewards.redeemed(params, function(result) {
           return res.send(200, {}, {
             rewards_earned: result
+          });
+        });
+      });
+      return this.post(/\/create/).bind(function(res, params) {
+        return rewards.create(params, function(result) {
+          return res.send(200, {}, {
+            reward: result
           });
         });
       });

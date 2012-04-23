@@ -136,5 +136,38 @@ class Rewards
           if redeemed.length is reward_list.length
             cb redeemed
 
+
+  create:(params, cb)->
+    if params.type is 'merch'
+      quantity = params.quantity
+      if not quantity?
+        cb 'not enough info: rejected'
+        return
+      type = params.type
+      db = @merch
+    else
+      type= params.type
+      end_date = params.end_date || '5-30-2012'
+      db = @sweep
+    name = params.name
+    cost = params.cost
+
+    if cost? and name? and type? and db?
+      @getNextId db, (nextid)=>
+       if db is @merch
+         values = "values(" + nextid + ",'" + name + "'," + cost + ",'" + quantity + "')"
+       else
+         values = "values(" + nextid + ",'" + name + "'," + cost + "," + "'0'" + ",'" + end_date + "')"
+
+        @db.query "insert into " + db + " " + values, (result)->
+          cb name + ' inserted'
+    else
+      cb 'not enough info: rejected'
+
+  getNextId:(db, cb)=>
+    id = if db is @merch then 'merch_id' else 'sweep_id'
+    @db.query "select max("+id+") from " + db, (result)->
+      cb (result.rows[0].max + 1)
+
 module.exports = Rewards
 

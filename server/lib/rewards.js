@@ -9,6 +9,7 @@
     function Rewards(db, auth) {
       this.db = db;
       this.auth = auth;
+      this.getNextId = __bind(this.getNextId, this);
       this.updateAccount = __bind(this.updateAccount, this);
       this.updateReward = __bind(this.updateReward, this);
       this.updatePoints = __bind(this.updatePoints, this);
@@ -211,6 +212,49 @@
           }));
         }
         return _results;
+      });
+    };
+
+    Rewards.prototype.create = function(params, cb) {
+      var cost, db, end_date, name, quantity, type,
+        _this = this;
+      if (params.type === 'merch') {
+        quantity = params.quantity;
+        if (!(quantity != null)) {
+          cb('not enough info: rejected');
+          return;
+        }
+        type = params.type;
+        db = this.merch;
+      } else {
+        type = params.type;
+        end_date = params.end_date || '5-30-2012';
+        db = this.sweep;
+      }
+      name = params.name;
+      cost = params.cost;
+      if ((cost != null) && (name != null) && (type != null) && (db != null)) {
+        return this.getNextId(db, function(nextid) {
+          var values;
+          if (db === _this.merch) {
+            values = "values(" + nextid + ",'" + name + "'," + cost + ",'" + quantity + "')";
+          } else {
+            values = "values(" + nextid + ",'" + name + "'," + cost + "," + "'0'" + ",'" + end_date + "')";
+          }
+          return _this.db.query("insert into " + db + " " + values, function(result) {
+            return cb(name + ' inserted');
+          });
+        });
+      } else {
+        return cb('not enough info: rejected');
+      }
+    };
+
+    Rewards.prototype.getNextId = function(db, cb) {
+      var id;
+      id = db === this.merch ? 'merch_id' : 'sweep_id';
+      return this.db.query("select max(" + id + ") from " + db, function(result) {
+        return cb(result.rows[0].max + 1);
       });
     };
 

@@ -171,6 +171,20 @@ function getAdminRewards($type)
 }
 
 
+function createReward($reward)
+{
+  global $url;
+  $route = $url . '/rewards/create';
+  $reward = encodeparams($reward);
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid={$_SESSION['admintoken']}&name={$reward['name']}&type={$reward['type']}&cost={$reward['cost']}&end_date={$reward['end_date']}&quantity={$reward['quantity']}");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+}
+
 function redeemReward($reward, $acct_id)
 {
   global $url;

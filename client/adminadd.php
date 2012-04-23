@@ -17,7 +17,17 @@
 session_start();
 require_once('lib/api.php');
 if (isset($_SESSION['admintoken']))
-  print_info();
+{
+  if($_SERVER['REQUEST_METHOD'] == 'POST')
+  {
+    createReward($_POST);
+    header("Location: adminlist.php?d=r&t=br");
+  }
+  else
+  {
+    print_info();
+  }
+}
 else
   header("Location: adminlogin.php");
  function print_info()
@@ -51,7 +61,7 @@ else
 			<br/>
 			<div class="infotable">
 			<table border="0" class="info">
-
+      <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 				<?php print_stuff($type);?>
 
 				
@@ -59,7 +69,7 @@ else
 			<br/>
 			<table border="0">
 			<tr><td>
-			<form><input type="submit" value="Create" /></form>
+			<input type="submit" value="Create" /></form>
 			</td></tr>
 			</table>
 			</div>

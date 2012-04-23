@@ -154,6 +154,11 @@ exports.createRouter = (db)->
         res.send 200, {},
           rewards_earned: result
 
+    @post(/\/create/).bind (res, params)->
+      rewards.create params, (result)->
+        res.send 200, {},
+          reward: result
+
   router
 
 
