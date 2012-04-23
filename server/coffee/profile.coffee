@@ -28,15 +28,28 @@ class Profile
         cb 'not logged int'
         return
       q = "update customer set "
+      count = 0
       if params.fn
         q = q + "first_name='" + params.fn + "' "
+        count++
       if params.ln
-        q = q + "last_name='" + params.ln + "' "
+        a = ''
+        if count > 0
+          a = ', '
+        count++
+        q = q + a + "last_name='" + params.ln + "' "
       if params.zip
-        q = q + "zip='" + params.zip + "' "
+        b = ''
+        if count > 0
+          b = ', '
+        count++
+        q = q + b + "zip='" + params.zip + "' "
 
       q = q + "where ssn='" + username + "'"
-      @db.query q, (result)=>
-        cb 'updated customer info'
+      if count > 0
+        @db.query q, (result)=>
+          cb 'updated customer info'
+      else
+        cb 'no info to update'
 
 module.exports = Profile

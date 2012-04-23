@@ -40,19 +40,37 @@
     Profile.prototype.update = function(params, cb) {
       var _this = this;
       return this.auth.getUsername(params.sessionid, function(username) {
-        var q;
+        var a, b, count, q;
         if (username === null || username === void 0) {
           cb('not logged int');
           return;
         }
         q = "update customer set ";
-        if (params.fn) q = q + "first_name='" + params.fn + "' ";
-        if (params.ln) q = q + "last_name='" + params.ln + "' ";
-        if (params.zip) q = q + "zip='" + params.zip + "' ";
+        count = 0;
+        if (params.fn) {
+          q = q + "first_name='" + params.fn + "' ";
+          count++;
+        }
+        if (params.ln) {
+          a = '';
+          if (count > 0) a = ', ';
+          count++;
+          q = q + a + "last_name='" + params.ln + "' ";
+        }
+        if (params.zip) {
+          b = '';
+          if (count > 0) b = ', ';
+          count++;
+          q = q + b + "zip='" + params.zip + "' ";
+        }
         q = q + "where ssn='" + username + "'";
-        return _this.db.query(q, function(result) {
-          return cb('updated customer info');
-        });
+        if (count > 0) {
+          return _this.db.query(q, function(result) {
+            return cb('updated customer info');
+          });
+        } else {
+          return cb('no info to update');
+        }
       });
     };
 
