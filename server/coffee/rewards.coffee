@@ -32,6 +32,21 @@ class Rewards
     else 
       cb params.type
 
+  getAll:(params, cb)->
+    if params.type is 'm'
+      @db.query "select * from " + @merch, (merch)=>
+        cb merch.rows
+    else if params.type is 's'
+      @db.query "select * from " + @sweep, (sweep)=>
+        cb sweep.rows
+    else
+      @db.query "select * from " + @merch, (merch)=>
+        merch = merch.rows
+        @db.query "select * from " + @sweep, (sweep)=>
+          for s in sweep.rows
+            merch.push s
+          cb merch
+
   account:(params, cb)->
    @auth.getUsername params.sessionid, (username)=>
      if not username

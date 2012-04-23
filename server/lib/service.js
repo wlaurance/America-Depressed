@@ -179,6 +179,13 @@
           });
         });
       });
+      this.get(/\/all/).bind(function(res, params) {
+        return rewards.getAll(params, function(r) {
+          return res.send(200, {}, {
+            rewards: r
+          });
+        });
+      });
       this.get(/\/specific/).bind(function(res, params) {
         return rewards.getSpecific(params, function(r) {
           return res.send(200, {}, {

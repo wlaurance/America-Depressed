@@ -59,8 +59,7 @@ else
 				<br/>
 				<table border="0" class="info">
 			
-					<?php printcoltitles($type, $want); ?>
-					<?php printinfo($type, $want); ?>
+					<?php printcol($type, $want); ?>
 
 
 				</table> 
@@ -81,11 +80,11 @@ else
 <?php 
 }
 
-function printcoltitles($type, $want){
+function printcol($type, $want){
   if ($type == "a")
     $accounts = getAccounts($want);
   else if ($type == "r")
-    $rewards = getRewards($want);
+    $rewards = getAdminRewards($want);
 
 	if ($type == "a") { ?>
 		<tr><td><b>Account Number</b></td><td><b>First Name</b></td><td><b>Last Name</b></td><td><b>SSN</b></td><td><b>Balance</b></td><td><b>Active?</b></td></tr>
@@ -104,14 +103,28 @@ function printcoltitles($type, $want){
 <?php }
   }
     
-	else { ?>
-		<tr><td><b>Reward Number</b></td><td><b>Name</b></td><td><b>Type</b></td><td><b>Cost</b></td></tr>
-<?php }
+  else { 
+    ?>
+      <tr><td><b>Reward Number</b></td><td><b>Name</b></td><td><b>Type</b></td><td><b>Cost</b></td></tr> <?php
 
-function printinfo($type, $want){
-	//not sure what you need me to do here. This is where it would print based on the type.
-	//see above for column names... didn't want to list everything for the account info. Just did the
-	//basics.  same with rewards.
-  }
+    foreach($rewards as $r){
+      if(isset($r->{'sweep_id'}))
+      {
+        $t = 'Sweepstakes';
+          $id = $r->{'sweep_id'};
+      }
+      else 
+      {
+        $t = 'Merchandise';
+        $id = $r->{'merch_id'};
+
+      }
+      ?>
+        <tr><td><?php echo $id; ?></td><td><?php echo $r->{'name'}; ?></td><td><?php echo $t; ?></td><td><?php echo $r->{'cost'}; ?></td></tr>
+  <?php
+    }
+?>
+    
+<?php }
 }
 ?>

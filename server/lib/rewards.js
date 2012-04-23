@@ -51,6 +51,32 @@
       }
     };
 
+    Rewards.prototype.getAll = function(params, cb) {
+      var _this = this;
+      if (params.type === 'm') {
+        return this.db.query("select * from " + this.merch, function(merch) {
+          return cb(merch.rows);
+        });
+      } else if (params.type === 's') {
+        return this.db.query("select * from " + this.sweep, function(sweep) {
+          return cb(sweep.rows);
+        });
+      } else {
+        return this.db.query("select * from " + this.merch, function(merch) {
+          merch = merch.rows;
+          return _this.db.query("select * from " + _this.sweep, function(sweep) {
+            var s, _i, _len, _ref;
+            _ref = sweep.rows;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              s = _ref[_i];
+              merch.push(s);
+            }
+            return cb(merch);
+          });
+        });
+      }
+    };
+
     Rewards.prototype.account = function(params, cb) {
       var _this = this;
       return this.auth.getUsername(params.sessionid, function(username) {

@@ -128,7 +128,12 @@ exports.createRouter = (db)->
       rewards.getRange params, (r)->
         res.send 200, {},
           rewards: r
-  
+
+    @get(/\/all/).bind (res, params)->
+      rewards.getAll params, (r)->
+        res.send 200, {},
+          rewards: r
+
     @get(/\/specific/).bind (res,params)->
       rewards.getSpecific params, (r)->
         res.send 200, {},
