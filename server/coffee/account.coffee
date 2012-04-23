@@ -62,14 +62,15 @@ class Account
   applyInterest:(params, cb)->
     @db.query "select * from " + @dbname, (result)=>
       accounts = result.rows
-      count = 0
+      count = 1
       for account in accounts
         newbalance = money.getNumber(account.balance) * Number(account.interest_rate)
-        @db.query "update " + @dbname + " set balance='" + money.make newbalance + "' where account_num_a='" + account.account_num_a + "'", (result)=>
+        winston.info newbalance - money.getNumber account.balance
+        @db.query "update " + @dbname + " set balance='" + (money.make newbalance) + "' where account_num_a='" + account.account_num_a + "'", (result)=>
           count++
           if count >= accounts.length
             cb 'applied interest!'
-
+      
 
 
   getBilling:(params, cb)->

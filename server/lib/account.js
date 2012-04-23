@@ -106,15 +106,16 @@
       return this.db.query("select * from " + this.dbname, function(result) {
         var account, accounts, count, newbalance, _i, _len, _results;
         accounts = result.rows;
-        count = 0;
+        count = 1;
         _results = [];
         for (_i = 0, _len = accounts.length; _i < _len; _i++) {
           account = accounts[_i];
           newbalance = money.getNumber(account.balance) * Number(account.interest_rate);
-          _results.push(_this.db.query("update " + _this.dbname + " set balance='" + money.make(newbalance + "' where account_num_a='" + account.account_num_a + "'", function(result) {
+          winston.info(newbalance - money.getNumber(account.balance));
+          _results.push(_this.db.query("update " + _this.dbname + " set balance='" + (money.make(newbalance)) + "' where account_num_a='" + account.account_num_a + "'", function(result) {
             count++;
             if (count >= accounts.length) return cb('applied interest!');
-          })));
+          }));
         }
         return _results;
       });
