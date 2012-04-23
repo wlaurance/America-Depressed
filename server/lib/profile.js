@@ -41,6 +41,10 @@
       var _this = this;
       return this.auth.getUsername(params.sessionid, function(username) {
         var q;
+        if (username === null || username === void 0) {
+          cb('not logged int');
+          return;
+        }
         q = "update customer set ";
         if (params.fn) q = q + "first_name='" + params.fn + "' ";
         if (params.ln) q = q + "last_name='" + params.ln + "' ";

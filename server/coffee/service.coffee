@@ -46,13 +46,9 @@ exports.createRouter = (db)->
 
 
     @get(/\/update/).bind (res, params)->
-      auth.check params.sessionid, (username)->
-        if username isnt false
-          profile.update params, (c)->
-            res.send 200, {},
-              message: c
-        else
-          notLoggedin res
+      profile.update params, (c)->
+        res.send 200, {},
+          message: c
 
   router.path /\/time/, ->
     @get().bind (res) ->

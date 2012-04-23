@@ -45,6 +45,18 @@ function getProfile($username)
   return json_decode($result);
 }
 
+function updateAccountInfo($post)
+{
+  global $url;
+  $route = $url . '/profile/update';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route . "?sessionid={$_SESSION['token']}&fn={$post['first_name']}&ln={$post['last_name']}&zip={$post['zip']}");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+}
+
 function logout()
 {
   global $url;

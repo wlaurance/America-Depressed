@@ -66,16 +66,10 @@
         });
       });
       return this.get(/\/update/).bind(function(res, params) {
-        return auth.check(params.sessionid, function(username) {
-          if (username !== false) {
-            return profile.update(params, function(c) {
-              return res.send(200, {}, {
-                message: c
-              });
-            });
-          } else {
-            return notLoggedin(res);
-          }
+        return profile.update(params, function(c) {
+          return res.send(200, {}, {
+            message: c
+          });
         });
       });
     });

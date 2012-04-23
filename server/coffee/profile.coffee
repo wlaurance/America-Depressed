@@ -22,7 +22,11 @@ class Profile
 
 
   update:(params, cb)->
+
     @auth.getUsername params.sessionid, (username)=>
+      if username is null or username is undefined
+        cb 'not logged int'
+        return
       q = "update customer set "
       if params.fn
         q = q + "first_name='" + params.fn + "' "
