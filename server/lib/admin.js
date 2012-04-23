@@ -102,7 +102,7 @@
           if (what === 'balance') {
             return cb(money.make(avg));
           } else {
-            return cb(avg);
+            return cb(avg.toFixed(0));
           }
         });
       });

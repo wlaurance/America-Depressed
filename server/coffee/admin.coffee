@@ -60,7 +60,7 @@ class Admin
         if what is 'balance'
           cb money.make avg
         else
-          cb avg
+          cb avg.toFixed 0
 
   max:(what, params, db, cb)=>
     db = @processDBClause params, db, (what is 'balance')
