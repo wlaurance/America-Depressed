@@ -101,9 +101,7 @@ function print_stuff($type){
 		<tr>
 		<td>Credit Score:</td><td><input type="text" name="credit_score" size="25" /></td>
 		</tr>
-		<tr>
-		<td>Reward Account Number:</td><td><input type="text" name="reward_acct" size="25" /></td>
-		</tr>
+
 <?php
 	}
 	else {

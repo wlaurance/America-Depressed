@@ -33,13 +33,13 @@ else
 			
 			<table border="0" class="info">
 				<tr>
-        <td><center><a href="admindata.php">Data</a></center></td><td>Compute functions on the database, including: max, min, ave, count, sum.  Limit data based on demographic conditions.</td>
+        <td><center><a href="admindata.php">Data</a></center></td><td><p style="text-align:left;" >Compute functions on the database, including: max, min, ave, count, sum.  Limit data based on demographic conditions.</p></td>
 				</tr>
 				<tr>
-        <td><center><a href="adminaccounts.php">Accounts</a></center></td><td>List, create, and update accounts.  Charge interest to each account.</td>
+        <td><center><a href="adminaccounts.php">Accounts</a></center></td><td><p style="text-align:left;" >List, create, and update accounts.  Charge interest to each account.</p></td>
 				</tr>
 				<tr>
-        <td><center><a href="adminrewards.php">Rewards</a></center></td><td>List, create, and update rewards.</td>
+        <td><center><a href="adminrewards.php">Rewards</a></center></td><td><p style="text-align:left;" >List, create, and update rewards.</p></td>
 				</tr>
 			</table> 
 			</div>
