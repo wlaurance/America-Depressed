@@ -150,13 +150,59 @@ function print_data($data, $post)
 			<br/>
 			<br/>
 			<div class="infotable">
-      The result of <?php echo $post['function']; ?> is <?php echo $data->{'results'}; ?>
+			<?php 
+			
+			if(isset($post['function'])){
+				if ($post['function']=="avg(balance)")
+					echo "The Average Balance ";
+				else if ($post['function']=="avg(credit_score)")
+					echo "The Average Credit Score ";
+				else if ($post['function']=="max(balance)")
+					echo "The Maximum Balance ";
+				else if ($post['function']=="max(credit_score)")
+					echo "The Maximum Credit Score ";
+				else if ($post['function']=="min(balance)")
+					echo "The Minimum Balance ";
+				else if ($post['function']=="min(credit_score)")
+					echo "The Minimum Credit Score ";
+				else if ($post['function']=="sum(balance)")			
+					echo "The Total Debt ";
+				else if ($post['function']=="count(account_num)")
+					echo "The Number of Accounts ";
+					
+				if ($post['gender']=="M")
+					echo "for Males ";
+				else if ($post['gender']=="F")
+					echo "for Females ";
+				else if ($post['gender']=="ALL")
+					echo "for Both Genders ";
+				
+				if ($post['state']=="VA")
+					echo "in VA ";
+				else if ($post['state']=="NC")
+					echo "in NC ";
+				else if ($post['state']=="SC")
+					echo "in SC ";
+				else if ($post['state']=="MD")
+					echo "in MD ";
+				else if ($post['state']=="WV")
+					echo "in WV ";
+					
+				if ($post['zip'] != "ALL")
+					echo "in " . $post['zip'] . " ";
+					
+				echo "is " . $data->{'results'};
+				
+			}
+			else
+				echo "Please choose a valid function.";
+			?>
       </div>	
       <br/>
 			<table border="0">
 			<tr>
 			<td><form action="adminhome.php" method="get"><input type="submit" value="Home" /></form></td>
-			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			<td><form action="adminlogout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 			</tr>
 			</table>
     </div>
