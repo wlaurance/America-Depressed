@@ -94,8 +94,12 @@ class Account
   getAccounts:(params, cb)->
     if params.type is 'a'
       db = @dbname
-    else
+    else if params.type is 'i'
       db = @accountinactive
-    @db.query "select * from " + db, (result)=>
-      cb result.rows
+    else
+      db = 'both'
+    dbaccount = if params.type is 'a' then 'account_active.account_num_a' else 'account_inactive.account_num_i'
+    if db isnt 'both'
+      @db.query "select * from " + db + ", debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = " + dbaccount , (result)=>
+        cb result.rows
 module.exports = Account

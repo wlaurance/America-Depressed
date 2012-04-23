@@ -143,16 +143,21 @@
     };
 
     Account.prototype.getAccounts = function(params, cb) {
-      var db,
+      var db, dbaccount,
         _this = this;
       if (params.type === 'a') {
         db = this.dbname;
-      } else {
+      } else if (params.type === 'i') {
         db = this.accountinactive;
+      } else {
+        db = 'both';
       }
-      return this.db.query("select * from " + db, function(result) {
-        return cb(result.rows);
-      });
+      dbaccount = params.type === 'a' ? 'account_active.account_num_a' : 'account_inactive.account_num_i';
+      if (db !== 'both') {
+        return this.db.query("select * from " + db + ", debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = " + dbaccount, function(result) {
+          return cb(result.rows);
+        });
+      }
     };
 
     return Account;
