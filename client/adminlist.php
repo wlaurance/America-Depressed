@@ -14,6 +14,11 @@ else
    {
    		$type = $_GET["d"];
    		$want = $_GET["t"];
+      if(isset($_GET["i"]))
+      {
+        if($_GET["i"] == 'charge')
+          chargeInterest();
+      }
       ?>
 <html>
 	<head>

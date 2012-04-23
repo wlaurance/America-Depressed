@@ -242,6 +242,19 @@ function getAccounts($type)
   return $z->{'accounts'};
 }
 
+function chargeInterest()
+{
+  global $url;
+  $route = $url . '/account/applyinterest';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route . "?sessionid={$_SESSION['admintoken']}");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  $z = json_decode($result);
+  return $z->{'message'};
+}
+
 function processAdminRequest($post)
 {
   $post = encodeparams($post);
