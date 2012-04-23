@@ -102,4 +102,16 @@ class Account
     if db isnt 'both'
       @db.query "select * from " + db + ", debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = " + dbaccount , (result)=>
         cb result.rows
+    else
+      @db.query "select * from account_active, debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = account_active.account_num_a" , (result)=>
+        aaccounts = result.rows
+        @db.query "select * from account_inactive, debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = account_inactive.account_num_i", (result2)=>
+          iaccounts = result2.rows
+          for a in iaccounts
+            aaccounts.push a
+          winston.info 'aacounts length: ' + aaccounts.length
+          cb aaccounts
+
+
+
 module.exports = Account

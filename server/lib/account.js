@@ -157,6 +157,21 @@
         return this.db.query("select * from " + db + ", debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = " + dbaccount, function(result) {
           return cb(result.rows);
         });
+      } else {
+        return this.db.query("select * from account_active, debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = account_active.account_num_a", function(result) {
+          var aaccounts;
+          aaccounts = result.rows;
+          return _this.db.query("select * from account_inactive, debtor, customer where customer.ssn = debtor.ssn and debtor.account_num = account_inactive.account_num_i", function(result2) {
+            var a, iaccounts, _i, _len;
+            iaccounts = result2.rows;
+            for (_i = 0, _len = iaccounts.length; _i < _len; _i++) {
+              a = iaccounts[_i];
+              aaccounts.push(a);
+            }
+            winston.info('aacounts length: ' + aaccounts.length);
+            return cb(aaccounts);
+          });
+        });
       }
     };
 
