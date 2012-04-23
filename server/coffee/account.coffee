@@ -8,6 +8,7 @@ class Account
     @chargedb = 'charges'
     @paymentdb = 'payments'
     @debtor = 'debtor'
+    @accountinactive = 'account_inactive'
 
   get:(username, cb)->
     @getAccount username, (accountnumber)=>
@@ -90,4 +91,11 @@ class Account
       winston.info JSON.stringify result.rows[0]
       cb Number(result.rows[0].max) + 1
 
+  getAccounts:(params, cb)->
+    if params.type is 'a'
+      db = @dbname
+    else
+      db = @accountinactive
+    @db.query "select * from " + db, (result)=>
+      cb result.rows
 module.exports = Account

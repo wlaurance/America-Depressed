@@ -20,6 +20,7 @@
       this.chargedb = 'charges';
       this.paymentdb = 'payments';
       this.debtor = 'debtor';
+      this.accountinactive = 'account_inactive';
     }
 
     Account.prototype.get = function(username, cb) {
@@ -138,6 +139,19 @@
       return this.db.query("select max(" + column + ") from " + db + " where account_num='" + accnum + "'", function(result) {
         winston.info(JSON.stringify(result.rows[0]));
         return cb(Number(result.rows[0].max) + 1);
+      });
+    };
+
+    Account.prototype.getAccounts = function(params, cb) {
+      var db,
+        _this = this;
+      if (params.type === 'a') {
+        db = this.dbname;
+      } else {
+        db = this.accountinactive;
+      }
+      return this.db.query("select * from " + db, function(result) {
+        return cb(result.rows);
       });
     };
 

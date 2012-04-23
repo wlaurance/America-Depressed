@@ -18,7 +18,7 @@
   exports.createRouter = function(db) {
     var router;
     auth = new auth(db);
-    profile = new profile(db);
+    profile = new profile(db, auth);
     account = new account(db, auth);
     admin = new admin(db);
     rewards = new rewards(db, auth);
@@ -58,11 +58,24 @@
           }
         });
       });
-      return this.get(/\/logout/).bind(function(res, params) {
+      this.get(/\/logout/).bind(function(res, params) {
         return auth.logout(params.sessionid, function() {
           return res.send(200, {}, {
             message: 'You have successfully logged out'
           });
+        });
+      });
+      return this.get(/\/update/).bind(function(res, params) {
+        return auth.check(params.sessionid, function(username) {
+          if (username !== false) {
+            return profile.update(params, function(c) {
+              return res.send(200, {}, {
+                message: c
+              });
+            });
+          } else {
+            return notLoggedin(res);
+          }
         });
       });
     });
@@ -103,7 +116,7 @@
           }
         });
       });
-      return this.post(/\/charge/).bind(function(res, params) {
+      this.post(/\/charge/).bind(function(res, params) {
         return auth.check(params.sessionid, function(user) {
           if (user) {
             return account.postCharge(params, function(message) {
@@ -112,6 +125,13 @@
           } else {
             return notLoggedin(res);
           }
+        });
+      });
+      return this.get(/\/list/).bind(function(res, params) {
+        return account.getAccounts(params, function(result) {
+          return res.send(200, {}, {
+            accounts: result
+          });
         });
       });
     });

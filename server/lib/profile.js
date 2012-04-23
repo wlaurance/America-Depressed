@@ -6,8 +6,9 @@
 
   Profile = (function() {
 
-    function Profile(db) {
+    function Profile(db, auth) {
       this.db = db;
+      this.auth = auth;
       this.get = __bind(this.get, this);
       this.dbname = "customer";
       this.address = "address";
@@ -33,6 +34,21 @@
         } else {
           return cb(false);
         }
+      });
+    };
+
+    Profile.prototype.update = function(params, cb) {
+      var _this = this;
+      return this.auth.getUsername(params.sessionid, function(username) {
+        var q;
+        q = "update customer set ";
+        if (params.fn) q = q + "first_name='" + params.fn + "' ";
+        if (params.ln) q = q + "last_name='" + params.ln + "' ";
+        if (params.zip) q = q + "zip='" + params.zip + "' ";
+        q = q + "where ssn='" + username + "'";
+        return _this.db.query(q, function(result) {
+          return cb('updated customer info');
+        });
       });
     };
 

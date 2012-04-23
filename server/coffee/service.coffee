@@ -8,7 +8,7 @@ rewards = require './rewards'
 
 exports.createRouter = (db)->
   auth = new auth db
-  profile = new profile db
+  profile = new profile db, auth
   account = new account db, auth
   admin = new admin db
   rewards = new rewards db, auth
@@ -43,6 +43,16 @@ exports.createRouter = (db)->
       auth.logout params.sessionid, ->
         res.send 200, {},
           message:'You have successfully logged out'
+
+
+    @get(/\/update/).bind (res, params)->
+      auth.check params.sessionid, (username)->
+        if username isnt false
+          profile.update params, (c)->
+            res.send 200, {},
+              message: c
+        else
+          notLoggedin res
 
   router.path /\/time/, ->
     @get().bind (res) ->
@@ -79,6 +89,11 @@ exports.createRouter = (db)->
               message
         else
           notLoggedin res
+
+    @get(/\/list/).bind (res, params)->
+      account.getAccounts params, (result)->
+        res.send 200, {},
+          accounts: result
 
   router.path /\/admin/, ->
     @post().bind (res,params)->

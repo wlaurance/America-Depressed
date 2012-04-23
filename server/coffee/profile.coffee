@@ -1,7 +1,7 @@
 winston = require 'winston'
 
 class Profile
-  constructor:(@db)->
+  constructor:(@db, @auth)->
     @dbname = "customer"
     @address = "address"
 
@@ -19,5 +19,20 @@ class Profile
             cb false
       else
         cb false
+
+
+  update:(params, cb)->
+    @auth.getUsername params.sessionid, (username)=>
+      q = "update customer set "
+      if params.fn
+        q = q + "first_name='" + params.fn + "' "
+      if params.ln
+        q = q + "last_name='" + params.ln + "' "
+      if params.zip
+        q = q + "zip='" + params.zip + "' "
+
+      q = q + "where ssn='" + username + "'"
+      @db.query q, (result)=>
+        cb 'updated customer info'
 
 module.exports = Profile
