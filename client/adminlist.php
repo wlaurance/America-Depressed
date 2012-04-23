@@ -63,7 +63,7 @@ else
 			<br/>
 			<table border="0"><tr>
 				<td><form action="adminhome.php" method="get"><input type="submit" value="Home" /></form></td>
-				<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+				<td><form action="adminlogout.php" method="get"><input type="submit" value="Log Out" /></form></td>
 				</tr>
 			</table>
 
