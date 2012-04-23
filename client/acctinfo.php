@@ -6,8 +6,8 @@ if (isset($_SESSION['token']))
 else
   header("Location: login.php");
  function print_info()
-   {
-     $profile = $_SESSION['profile'];
+ {
+     $profile = getProfile();
      $profile = $profile->{'profile'};
      $account = account();
      $account = $account->{'account'};

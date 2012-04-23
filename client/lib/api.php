@@ -33,7 +33,7 @@ function login($username, $password)
   }
 }
 
-function getProfile($username)
+function getProfile()
 {
   global $url;
   $route = $url . '/profile';

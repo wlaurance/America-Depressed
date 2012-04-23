@@ -7,7 +7,7 @@ else
   header("Location: login.php");
  function print_info()
    {
-     $profile = $_SESSION['profile'];
+     $profile = getProfile();
      $profile = $profile->{'profile'};
      $rewardsa = getRewardAccount();
      $rewardsa = $rewardsa->{'rewards_account'};
