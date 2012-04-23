@@ -83,11 +83,19 @@ function printcoltitles($type, $want){
     $rewards = getRewards($want);
 
 	if ($type == "a") { ?>
-		<tr><td><b>Account Number</b></td><td><b>First Name</b></td><td><b>Last Name</b></td><td><b>SSN</b></td><td><b>Balance</b></td></tr>
+		<tr><td><b>Account Number</b></td><td><b>First Name</b></td><td><b>Last Name</b></td><td><b>SSN</b></td><td><b>Balance</b></td><td><b>Active?</b></td></tr>
 <?php
     foreach($accounts as $account){
+      if (isset($account->{'balance'}))
+        $balance = $account->{'balance'};
+      else
+        $balance = '---';
+      $active = 'Y';
+      if (isset($account->{'account_num_i'}))
+        $active = 'N';
+
 ?>
-  <tr><td><?php echo $account->{'account_num'}; ?></td><td><?php echo $account->{'first_name'};?></td><td><?php echo $account->{'last_name'};?></td><td><?php echo $account->{'ssn'}; ?></td><td><?php echo $account->{'balance'}; ?></td></tr>
+  <tr><td><?php echo $account->{'account_num'}; ?></td><td><?php echo $account->{'first_name'};?></td><td><?php echo $account->{'last_name'};?></td><td><?php echo $account->{'ssn'}; ?></td><td><?php echo $balance; ?></td><td><?php echo $active; ?></td></tr>
 <?php }
   }
     
