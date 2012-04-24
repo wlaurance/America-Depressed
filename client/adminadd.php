@@ -20,8 +20,15 @@ if (isset($_SESSION['admintoken']))
 {
   if($_SERVER['REQUEST_METHOD'] == 'POST')
   {
-    createReward($_POST);
-    header("Location: adminlist.php?d=r&t=br");
+    var_dump($_POST);
+    if ($_POST['type'] == 'account'){
+      createAccount($_POST);
+      header("Location: adminlist.php?d=a&br");
+    }
+    else {
+      createReward($_POST);
+      header("Location: adminlist.php?d=r&t=br");
+    }
   }
   else
   {
@@ -90,8 +97,10 @@ else
 }
 
 function print_stuff($type){
-	if($type=="a"){
+  if($type=="a"){
+    $zips = getAllZips();
 ?>
+    <input type="hidden" value="account" name="type"/>
 		<tr>
 		<td>First Name:</td><td><input type="text" name="first_name" size="25" /></td>
 		</tr>
@@ -99,8 +108,15 @@ function print_stuff($type){
 		<td>Last Name:</td><td><input type="text" name="last_name" size="25" /></td>
 		</tr>
 		<tr>
-		<td>Zip:</td><td><select name="zip">
-			<option value="ALL">All</option></td>
+    <td>Zip:</td><td><select name="zip">
+<?php 
+    foreach($zips as $z){
+?>
+  <option value="<?php echo $z; ?>"><?php echo $z; ?></option>
+<?php }
+?>
+    </select>
+    </td>
 		</tr>
 		<tr>
 		<td>Gender:</td><td><input type="text" name="gender" size="25" /></td>
