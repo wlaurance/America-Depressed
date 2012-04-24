@@ -146,8 +146,19 @@
           });
         });
       });
-      return this.get(/\/specific/).bind(function(res, params) {
+      this.get(/\/specific/).bind(function(res, params) {
         return account.specific(params, function(r) {
+          return res.send(200, {}, {
+            account: r
+          });
+        }, function(e) {
+          return res.send(200, {}, {
+            error_message: e
+          });
+        });
+      });
+      return this.post(/\/update/).bind(function(res, params) {
+        return account.update(params, function(r) {
           return res.send(200, {}, {
             account: r
           });

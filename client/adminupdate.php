@@ -15,7 +15,7 @@ if (isset($_SESSION['admintoken']))
   if ($_SERVER['REQUEST_METHOD'] == 'POST')
   {
     if ($_POST['type']== 'account'){
-      updateAccountAdmin($POST);
+      updateAccountAdmin($_POST);
       print_info('Account updated!', $_POST['accountnum']);
     } else {
     updateReward($_POST);
@@ -122,12 +122,12 @@ function print_stuff($type, $id){
 		<td>Zip:</td><td><select name="zip">
     <?php 
     foreach($zips as $zip){ ?>
-      <option value="<?php echo $zip;?>" selected="
+      <option value="<?php echo $zip;?>" 
         <?php if ($zip == $account->{'zip'}){
-          echo 'selected';
+          echo 'selected="selected"';
           }
          ?>
-        ">
+        >
       <?php echo $zip; ?></option>
     <?php } ?>
     </option></td>

@@ -232,5 +232,48 @@ class Account
         return
       else
         cb 'g2g'
+       
+
+  update:(params, error, cb)=>
+    if not params.acctnum or params.acctnum is ''
+      error 'no account num'
+      return
+    @db.query "select ssn from " + @debtor + " where account_num='" + params.acctnum + "'", (result1)=>
+      if result1.rows.length is 0
+        error 'no matching ssn'
+        return
+      ssn = result1.rows[0].ssn
+
+      value = 'set'
+      ov = value
+      if params.fn? and params.fn isnt ''
+        if value isnt ov
+          value = value + ','
+        value = value + " first_name='" + params.fn + "'"
+      if params.ln? and params.ln isnt ''
+        if value isnt ov
+          value = value + ','
+        value = value + " last_name='" + params.ln + "'"
+      if params.zip? and params.zip isnt ''
+        if value isnt ov
+          value = value + ','
+        value = value + " zip=" + params.zip + ""
+      if params.gender? and params.gender isnt ''
+        if value isnt ov
+          value = value + ','
+        value = value + " gender='" + params.gender + "'"
+      if params.credit_score? and params.credit_score isnt ''
+        if value isnt ov
+          value = value + ','
+        value = value + " credit_score='" + params.credit_score + "'"
+
+      if value isnt ov
+        @db.query "update " + @customer +  " " + value + " where ssn='" + ssn + "'", (result)->
+          cb 'update ' + ssn
+      else
+        cb 'nothing to update'
+
+
+
 
 module.exports = Account

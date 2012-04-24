@@ -14,6 +14,7 @@
       this.db = db;
       this.auth = auth;
       this.rewards = rewards;
+      this.update = __bind(this.update, this);
       this.validateSSN = __bind(this.validateSSN, this);
       this.getValidAccountNumber = __bind(this.getValidAccountNumber, this);
       this.nextSequence = __bind(this.nextSequence, this);
@@ -325,6 +326,51 @@
           error('Sorry ssn taken');
         } else {
           return cb('g2g');
+        }
+      });
+    };
+
+    Account.prototype.update = function(params, error, cb) {
+      var _this = this;
+      if (!params.acctnum || params.acctnum === '') {
+        error('no account num');
+        return;
+      }
+      return this.db.query("select ssn from " + this.debtor + " where account_num='" + params.acctnum + "'", function(result1) {
+        var ov, ssn, value;
+        if (result1.rows.length === 0) {
+          error('no matching ssn');
+          return;
+        }
+        ssn = result1.rows[0].ssn;
+        value = 'set';
+        ov = value;
+        if ((params.fn != null) && params.fn !== '') {
+          if (value !== ov) value = value + ',';
+          value = value + " first_name='" + params.fn + "'";
+        }
+        if ((params.ln != null) && params.ln !== '') {
+          if (value !== ov) value = value + ',';
+          value = value + " last_name='" + params.ln + "'";
+        }
+        if ((params.zip != null) && params.zip !== '') {
+          if (value !== ov) value = value + ',';
+          value = value + " zip=" + params.zip + "";
+        }
+        if ((params.gender != null) && params.gender !== '') {
+          if (value !== ov) value = value + ',';
+          value = value + " gender='" + params.gender + "'";
+        }
+        if ((params.credit_score != null) && params.credit_score !== '') {
+          if (value !== ov) value = value + ',';
+          value = value + " credit_score='" + params.credit_score + "'";
+        }
+        if (value !== ov) {
+          return _this.db.query("update " + _this.customer + " " + value + " where ssn='" + ssn + "'", function(result) {
+            return cb('update ' + ssn);
+          });
+        } else {
+          return cb('nothing to update');
         }
       });
     };
