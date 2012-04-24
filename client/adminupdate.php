@@ -110,11 +110,7 @@ function print_stuff($type, $id){
 		<tr>
 		<td>Credit Score:</td><td><input type="text" name="credit_score" size="25" value="<?php echo $account->{'credit_score'}; ?>"/></td>
 		</tr>
-		<tr>
-		<td>Account Status:</td><td><select name="status">
-			<option value="active">Active</option>
-			<option value="inactive">Inactive</option></td>
-		</tr>
+
 <?php
 	}
 	else {
