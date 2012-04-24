@@ -20,10 +20,12 @@ if (isset($_SESSION['admintoken']))
 {
   if($_SERVER['REQUEST_METHOD'] == 'POST')
   {
-    var_dump($_POST);
     if ($_POST['type'] == 'account'){
-      createAccount($_POST);
-      header("Location: adminlist.php?d=a&br");
+      $msg = createAccount($_POST);
+      if (isset($msg->{'error_message'}))
+        print_info("a", $msg->{'error_message'});
+      else
+        header("Location: adminlist.php?d=a&br");
     }
     else {
       createReward($_POST);
@@ -32,14 +34,14 @@ if (isset($_SESSION['admintoken']))
   }
   else
   {
-    print_info();
+	  $type = $_GET["t"];
+    print_info($type);
   }
 }
 else
   header("Location: adminlogin.php");
- function print_info()
+ function print_info($type, $err = '')
    {	
-	$type = $_GET["t"];
 ?>
 
 <html>
@@ -71,7 +73,7 @@ else
       <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 				<?php print_stuff($type);?>
 
-				
+        <?php if ($err != '') echo '<b>'. $err . '</b>'; ?>
 			</table> 
 			<br/>
 			<table border="0">
