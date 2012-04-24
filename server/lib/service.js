@@ -128,10 +128,21 @@
           });
         });
       });
-      return this.get(/\/applyinterest/).bind(function(res, params) {
+      this.get(/\/applyinterest/).bind(function(res, params) {
         return account.applyInterest(params, function(r) {
           return res.send(200, {}, {
             message: r
+          });
+        });
+      });
+      return this.post(/\/create/).bind(function(res, params) {
+        return account.create(params, function(r) {
+          return res.send(200, {}, {
+            account: r
+          });
+        }, function(e) {
+          return res.send(200, {}, {
+            error_message: e
           });
         });
       });

@@ -130,6 +130,28 @@ class Account
           winston.info 'aacounts length: ' + aaccounts.length
           cb aaccounts
 
+  create:(params, cb, error)->
+    firstname = params.fn
+    lastname = params.ln
+    zip = params.zip
+    gender = params.gender
+    ccscore = params.credit_score
+    if not firstname? or firstname is '' or not lastname? or lastname is ''
+      error 'Need a name!!!!'
+    if not zip? or zip is ''
+      error 'Need a zip'
+    if not gender? or gender is ''
+      error 'Need a gender'
+    if not ccscore? or ccscore is ''
+      error 'Need a credit score'
+    
+    @getValidAccountNumber (accountnum)=>
+      cb accountnum
 
+
+  getValidAccountNumber:(cb)=>
+    @db.query "select max(account_num) from " + @debtor, (result)->
+      cb (result.rows[0].max + 1)
+      
 
 module.exports = Account

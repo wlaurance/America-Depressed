@@ -127,6 +127,20 @@ function makePayment($post)
 
 }
 
+function createAccount($account)
+{
+  global $url;
+  $route = $url . '/account/create';
+  $account = encodeparams($account);
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid={$_SESSION['admintoken']}&fn={$account['first_name']}&ln={$account['last_name']}&zip={$account['zip']}&gender={$account['gender']}&ssn={$account['ssn']}&credit_score={$account['credit_score']}");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+}
+
 function getRewardAccount()
 {
   global $url;
@@ -169,6 +183,7 @@ function getReward($id)
   $z = json_decode($result);
   return $z->{'reward'};
 }
+
 function getAdminRewards($type)
 {
   global $url;

@@ -14,6 +14,7 @@
       this.db = db;
       this.auth = auth;
       this.rewards = rewards;
+      this.getValidAccountNumber = __bind(this.getValidAccountNumber, this);
       this.nextSequence = __bind(this.nextSequence, this);
       this.updateBalance = __bind(this.updateBalance, this);
       this.getCurrentBalance = __bind(this.getCurrentBalance, this);
@@ -200,6 +201,31 @@
           });
         });
       }
+    };
+
+    Account.prototype.create = function(params, cb, error) {
+      var ccscore, firstname, gender, lastname, zip,
+        _this = this;
+      firstname = params.fn;
+      lastname = params.ln;
+      zip = params.zip;
+      gender = params.gender;
+      ccscore = params.credit_score;
+      if (!(firstname != null) || firstname === '' || !(lastname != null) || lastname === '') {
+        error('Need a name!!!!');
+      }
+      if (!(zip != null) || zip === '') error('Need a zip');
+      if (!(gender != null) || gender === '') error('Need a gender');
+      if (!(ccscore != null) || ccscore === '') error('Need a credit score');
+      return this.getValidAccountNumber(function(accountnum) {
+        return cb(accountnum);
+      });
+    };
+
+    Account.prototype.getValidAccountNumber = function(cb) {
+      return this.db.query("select max(account_num) from " + this.debtor, function(result) {
+        return cb(result.rows[0].max + 1);
+      });
     };
 
     return Account;
