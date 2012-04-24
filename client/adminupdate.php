@@ -14,8 +14,13 @@ if (isset($_SESSION['admintoken']))
 {
   if ($_SERVER['REQUEST_METHOD'] == 'POST')
   {
+    if ($_POST['type']== 'account'){
+      updateAccountAdmin($POST);
+      print_info('Account updated!', $_POST['accountnum']);
+    } else {
     updateReward($_POST);
     header("Location: adminlist.php?d=r&t=br");
+    }
   }
   else
   {
@@ -24,10 +29,15 @@ if (isset($_SESSION['admintoken']))
 }
 else
   header("Location: adminlogin.php");
- function print_info()
+ function print_info($msg = '', $acctnum = '')
    {	
+     
 	$type = $_GET["t"];
 	$id = $_GET["account"];
+  if ($msg != '')
+    $type = 'a';
+  if ($id == '')
+    $id = $acctnum;
 ?>
 
 <html>
@@ -57,7 +67,7 @@ else
       <div class="infotable">
       <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 			<table border="0" class="info">
-
+        <?php if($msg != '') echo $msg; ?>
 				<?php print_stuff($type, $id);?>
 
 				
@@ -99,6 +109,9 @@ function print_stuff($type, $id){
 
     $zips = getAllZips();
 ?>
+   <input type="hidden" name="type" value="account"/>
+   <input type="hidden" name="accountnum" value="<?php echo $id; ?>"/>
+
 		<tr>
     <td>First Name:</td><td><input type="text" name="first_name" size="25" value="<?php echo $account->{'first_name'}; ?>" /></td>
 		</tr>
@@ -109,8 +122,15 @@ function print_stuff($type, $id){
 		<td>Zip:</td><td><select name="zip">
     <?php 
     foreach($zips as $zip){ ?>
-      <option value="<?php echo $zip;?>"><?php echo $zip; ?></option></td>
+      <option value="<?php echo $zip;?>" selected="
+        <?php if ($zip == $account->{'zip'}){
+          echo 'selected';
+          }
+         ?>
+        ">
+      <?php echo $zip; ?></option>
     <?php } ?>
+    </option></td>
 		</tr>
 		<tr>
 		<td>Gender:</td><td><input type="text" name="gender" size="25"value="<?php echo $account->{'gender'}; ?>" /></td>
