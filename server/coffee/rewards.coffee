@@ -223,6 +223,7 @@ class Rewards
 
   createAcc:(ssn, accnum, cb)->
     @db.query "insert into " + @earner + " values('" + ssn + "', '" + accnum + "')", (r)=>
-      cb 'done'
+      @db.query "insert into " + @reward_account + " values('" + accnum  + "', '" + 10 + "', 'Y')", (r2)=>
+        cb 'done'
 module.exports = Rewards
 

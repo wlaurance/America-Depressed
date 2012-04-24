@@ -321,7 +321,9 @@
     Rewards.prototype.createAcc = function(ssn, accnum, cb) {
       var _this = this;
       return this.db.query("insert into " + this.earner + " values('" + ssn + "', '" + accnum + "')", function(r) {
-        return cb('done');
+        return _this.db.query("insert into " + _this.reward_account + " values('" + accnum + "', '" + 10 + "', 'Y')", function(r2) {
+          return cb('done');
+        });
       });
     };
 

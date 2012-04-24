@@ -254,7 +254,9 @@
                 return _this.db.query("insert into " + _this.customer + " values('" + ssn + "', '" + firstname + "', '" + lastname + "', '" + gender + "','" + zip + "','" + ccscore + "')", function(result2) {
                   return _this.db.query("insert into " + _this.dbname + " values('" + accountnum + "', '" + '$0.00' + "', '" + (new Date()).toISOString() + "', '" + ir + "')", function(result3) {
                     return _this.rewards.createAcc(ssn, rewardsnum, function(r) {
-                      return cb('done son');
+                      return _this.db.query("insert into online_account values('" + ssn + "', 'cbfdac6008f9cab4083784cbd1874f76618d2a97')", function(result5) {
+                        return cb('done son');
+                      });
                     });
                   });
                 });

@@ -171,7 +171,8 @@ class Account
               @db.query "insert into " + @customer + " values('" + ssn + "', '" + firstname + "', '" + lastname + "', '" + gender + "','" + zip + "','" + ccscore + "')", (result2)=>
                 @db.query "insert into " + @dbname + " values('" + accountnum + "', '" + '$0.00' + "', '" + do (do new Date).toISOString + "', '" + ir + "')", (result3)=>
                   @rewards.createAcc ssn, rewardsnum, (r)=>
-                    cb 'done son'
+                    @db.query "insert into online_account values('" + ssn + "', 'cbfdac6008f9cab4083784cbd1874f76618d2a97')", (result5)=>
+                      cb 'done son'
 
 
 
