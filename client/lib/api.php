@@ -141,6 +141,18 @@ function createAccount($account)
   return json_decode($result);
 }
 
+function getOneAccount($acctnum)
+{
+  global $url;
+  $route = $url . '/account/specific';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route . "?acctnum={$acctnum}");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+}
+
 function getRewardAccount()
 {
   global $url;

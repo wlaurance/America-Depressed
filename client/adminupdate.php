@@ -87,12 +87,17 @@ else
 
 function print_stuff($type, $id){
 	if($type=="a"){
-    $account = getAccount($id);
+    $account = getOneAccount($id);
+    if (isset($account->{'error_message'}))
+      echo $account->{'error_message'};
+    else
+      $account = $account->{'account'};
     if (isset($account->{'account_num_a'}))
       $active = 'Y';
     else
       $active = 'N';
 
+    $zips = getAllZips();
 ?>
 		<tr>
     <td>First Name:</td><td><input type="text" name="first_name" size="25" value="<?php echo $account->{'first_name'}; ?>" /></td>
@@ -102,7 +107,10 @@ function print_stuff($type, $id){
 		</tr>
 		<tr>
 		<td>Zip:</td><td><select name="zip">
-			<option value="ALL">All</option></td>
+    <?php 
+    foreach($zips as $zip){ ?>
+      <option value="<?php echo $zip;?>"><?php echo $zip; ?></option></td>
+    <?php } ?>
 		</tr>
 		<tr>
 		<td>Gender:</td><td><input type="text" name="gender" size="25"value="<?php echo $account->{'gender'}; ?>" /></td>

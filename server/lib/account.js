@@ -53,6 +53,25 @@
       });
     };
 
+    Account.prototype.specific = function(params, cb, error) {
+      var _this = this;
+      if (!(params.acctnum != null) || params.acctnum === '') {
+        error('no account num');
+        return;
+      }
+      return this.db.query("select * from " + this.debtor + " where account_num='" + params.acctnum + "'", function(r1) {
+        var ssn;
+        if (!(r1.rows[0] != null) || r1.rows[0].ssn === '') {
+          error('invalid ssn');
+          return;
+        }
+        ssn = r1.rows[0].ssn;
+        return _this.db.query("select * from " + _this.customer + " where ssn='" + ssn + "'", function(r2) {
+          return cb(r2.rows[0]);
+        });
+      });
+    };
+
     Account.prototype.postCharge = function(params, cb) {
       var _this = this;
       return this.auth.getUsername(params.sessionid, function(username) {

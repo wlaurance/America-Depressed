@@ -104,6 +104,14 @@ exports.createRouter = (db)->
         res.send 200, {},
           error_message: e
 
+    @get(/\/specific/).bind (res, params)->
+      account.specific params, (r)->
+        res.send 200, {},
+          account:r
+      , (e)->
+        res.send 200, {},
+          error_message:e
+
   router.path /\/admin/, ->
     @post().bind (res,params)->
       if not params.username or not params.password

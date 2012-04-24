@@ -27,6 +27,18 @@ class Account
     @db.query "select account_num from " + @debtor + " where ssn='" + ssn + "'", (query)=>
       cb query.rows[0].account_num
 
+  specific:(params, cb, error)->
+    if not params.acctnum? or params.acctnum is ''
+      error 'no account num'
+      return
+    @db.query "select * from " + @debtor + " where account_num='" + params.acctnum + "'", (r1)=>
+      if not r1.rows[0]? or r1.rows[0].ssn is ''
+        error 'invalid ssn'
+        return
+      ssn = r1.rows[0].ssn
+      @db.query "select * from " + @customer + " where ssn='" + ssn + "'", (r2)=>
+        cb r2.rows[0]
+
   postCharge:(params, cb)->
     @auth.getUsername params.sessionid, (username)=>
       @getAccount username, (accountnumber)=>
