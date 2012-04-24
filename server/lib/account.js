@@ -14,6 +14,7 @@
       this.db = db;
       this.auth = auth;
       this.rewards = rewards;
+      this.validateSSN = __bind(this.validateSSN, this);
       this.getValidAccountNumber = __bind(this.getValidAccountNumber, this);
       this.nextSequence = __bind(this.nextSequence, this);
       this.updateBalance = __bind(this.updateBalance, this);
@@ -23,6 +24,7 @@
       this.paymentdb = 'payments';
       this.debtor = 'debtor';
       this.accountinactive = 'account_inactive';
+      this.customer = 'customer';
     }
 
     Account.prototype.get = function(username, cb) {
@@ -204,27 +206,94 @@
     };
 
     Account.prototype.create = function(params, cb, error) {
-      var ccscore, firstname, gender, lastname, zip,
+      var ccscore, firstname, gender, lastname, ssn, zip,
         _this = this;
       firstname = params.fn;
       lastname = params.ln;
       zip = params.zip;
       gender = params.gender;
       ccscore = params.credit_score;
+      ssn = params.ssn;
       if (!(firstname != null) || firstname === '' || !(lastname != null) || lastname === '') {
         error('Need a name!!!!');
+        return;
       }
-      if (!(zip != null) || zip === '') error('Need a zip');
-      if (!(gender != null) || gender === '') error('Need a gender');
-      if (!(ccscore != null) || ccscore === '') error('Need a credit score');
+      if (!(zip != null) || zip === '') {
+        error('Need a zip');
+        return;
+      }
+      if (!(gender != null) || gender === '') {
+        error('Need a gender');
+        return;
+      }
+      if (!(ccscore != null) || ccscore === '') {
+        error('Need a credit score');
+        return;
+      }
+      if (ccscore > 850 || ccscore < 300) {
+        error('Credit score out of range');
+        return;
+      }
+      if (!(ssn != null) || ssn === '') {
+        error('Need a ssn? duh');
+        return;
+      }
+      if (ssn.length > 9) {
+        error('too long of an ssn. DUH!!');
+        return;
+      }
+      if (ssn.length < 9) {
+        error('too short of an ssn. WTF MATE???!?');
+        return;
+      }
       return this.getValidAccountNumber(function(accountnum) {
-        return cb(accountnum);
+        return _this.validateSSN(ssn, error, function() {
+          return _this.rewards.getNextAcc(function(rewardsnum) {
+            return _this.getIR(ccscore, function(ir) {
+              error(ir);
+              return;
+              return _this.db.query("insert into " + _this.debtor + " values('" + ssn + "', " + accountnum + ")", function(result1) {
+                return _this.db.query("insert into " + _this.customer + " values('" + ssn + "', '" + firstname + "', '" + lastname + "', '" + gender + "', " + zip + "', " + ccscore + "')", function(result2) {
+                  return _this.db.query("insert into " + _this.dbname + " values('");
+                });
+              });
+            });
+          });
+        });
       });
+    };
+
+    Account.prototype.getIR = function(credit, cb) {
+      var interest, interestest, interestestst;
+      interest = 0;
+      if (credit > 299 && credit < 350) interest = 1.75;
+      if (credit > 349 && credit < 400) interest = 1.70;
+      if (credit > 399 && credit < 450) interest = 1.65;
+      if (credit > 449 && credit < 500) interestest = 1.60;
+      if (credit > 499 && credit < 550) interest = 1.55;
+      if (credit > 549 && credit < 600) interest = 1.50;
+      if (credit > 599 && credit < 650) interest = 1.45;
+      if (credit > 649 && credit < 700) interest = 1.40;
+      if (credit > 699 && credit < 750) interest = 1.35;
+      if (credit > 749 && credit < 800) interestestst = 1.30;
+      if (credit > 799 && credit < 851) interest = 1.25;
+      return cb(interest);
     };
 
     Account.prototype.getValidAccountNumber = function(cb) {
       return this.db.query("select max(account_num) from " + this.debtor, function(result) {
         return cb(result.rows[0].max + 1);
+      });
+    };
+
+    Account.prototype.validateSSN = function(ssn, error, cb) {
+      var _this = this;
+      return this.db.query("select ssn from customer where ssn='" + ssn + "'", function(result) {
+        if (result.rows.length > 0) {
+          error('Sorry ssn taken');
+        } else {
+          return cb('g2g');
+        }
       });
     };
 

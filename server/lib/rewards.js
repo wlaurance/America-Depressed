@@ -18,6 +18,7 @@
       this.sweep = 'reward_sweep';
       this.reward_account = 'reward_account';
       this.rewards_earned = 'rewards_earned';
+      this.earner = 'earner';
     }
 
     Rewards.prototype.getSpecific = function(params, cb) {
@@ -309,6 +310,12 @@
       } else {
         return cb('nothing to update');
       }
+    };
+
+    Rewards.prototype.getNextAcc = function(cb) {
+      return this.db.query("select max(acct_id) from " + this.earner, function(result) {
+        return cb(Number(result.rows[0].max) + 1);
+      });
     };
 
     return Rewards;

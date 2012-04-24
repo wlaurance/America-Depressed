@@ -6,6 +6,7 @@ class Rewards
     @sweep = 'reward_sweep'
     @reward_account = 'reward_account'
     @rewards_earned = 'rewards_earned'
+    @earner = 'earner'
 
   getSpecific:(params, cb)=>
     if params.id is ''
@@ -214,7 +215,11 @@ class Rewards
         cb 'update ' + params.name
     else
       cb 'nothing to update'
-    
+
+
+  getNextAcc:(cb)->
+    @db.query "select max(acct_id) from " + @earner, (result)->
+      cb (Number(result.rows[0].max) + 1)
 
 
 module.exports = Rewards

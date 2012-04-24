@@ -9,6 +9,7 @@ class Account
     @paymentdb = 'payments'
     @debtor = 'debtor'
     @accountinactive = 'account_inactive'
+    @customer = 'customer'
 
   get:(username, cb)->
     @getAccount username, (accountnumber)=>
@@ -136,22 +137,80 @@ class Account
     zip = params.zip
     gender = params.gender
     ccscore = params.credit_score
+    ssn = params.ssn
     if not firstname? or firstname is '' or not lastname? or lastname is ''
       error 'Need a name!!!!'
+      return
     if not zip? or zip is ''
       error 'Need a zip'
+      return
     if not gender? or gender is ''
       error 'Need a gender'
+      return
     if not ccscore? or ccscore is ''
       error 'Need a credit score'
-    
-    @getValidAccountNumber (accountnum)=>
-      cb accountnum
+      return
+    if ccscore > 850 or ccscore < 300
+      error 'Credit score out of range'
+      return
+    if not ssn? or ssn is ''
+      error 'Need a ssn? duh'
+      return
+    if ssn.length > 9
+      error 'too long of an ssn. DUH!!'
+      return
+    if ssn.length < 9
+      error 'too short of an ssn. WTF MATE???!?'
+      return
 
+    @getValidAccountNumber (accountnum)=>
+      @validateSSN ssn, error, =>
+        @rewards.getNextAcc (rewardsnum)=>
+          @getIR ccscore, (ir)=>
+            error ir
+            return
+            @db.query "insert into " + @debtor + " values('" + ssn + "', " + accountnum + ")", (result1)=>
+              @db.query "insert into " + @customer + " values('" + ssn + "', '" + firstname + "', '" + lastname + "', '" + gender + "', " + zip + "', " + ccscore + "')", (result2)=>
+                @db.query "insert into " + @dbname + " values('"
+
+
+
+  getIR:(credit, cb)->
+    interest = 0
+    if credit > 299 and credit < 350
+      interest = 1.75
+    if credit > 349 and credit < 400
+      interest = 1.70
+    if credit > 399 and credit < 450
+      interest = 1.65
+    if credit > 449 and credit < 500
+      interestest = 1.60
+    if credit > 499 and credit < 550
+      interest = 1.55
+    if credit > 549 and credit < 600
+      interest = 1.50
+    if credit > 599 and credit < 650
+      interest = 1.45
+    if credit > 649 and credit < 700
+      interest = 1.40
+    if credit > 699 and credit < 750
+      interest = 1.35
+    if credit > 749 and credit < 800
+      interestestst = 1.30
+    if credit > 799 and credit < 851
+      interest = 1.25
+    cb interest
 
   getValidAccountNumber:(cb)=>
     @db.query "select max(account_num) from " + @debtor, (result)->
       cb (result.rows[0].max + 1)
-      
+
+  validateSSN:(ssn, error, cb)=>
+    @db.query "select ssn from customer where ssn='" + ssn + "'", (result)=>
+      if result.rows.length > 0
+        error 'Sorry ssn taken'
+        return
+      else
+        cb 'g2g'
 
 module.exports = Account
