@@ -137,7 +137,7 @@ exports.createRouter = (db)->
     @get(/\/specific/).bind (res,params)->
       rewards.getSpecific params, (r)->
         res.send 200, {},
-          rewards: r
+          reward: r
 
     @post(/\/account/).bind (res, params)->
       rewards.account params, (result)->
@@ -159,6 +159,10 @@ exports.createRouter = (db)->
         res.send 200, {},
           reward: result
 
+    @post(/\/update/).bind (res, params)->
+      rewards.update params, (result)->
+        res.send 200, {},
+          reward: result
   router
 
 

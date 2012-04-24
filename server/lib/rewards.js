@@ -21,6 +21,11 @@
     }
 
     Rewards.prototype.getSpecific = function(params, cb) {
+      var _this = this;
+      if (params.id === '') {
+        cb('');
+        return;
+      }
       if (params.type === 'sweep') {
         return this.db.query("select * from " + this.sweep + " where sweep_id=" + params.id + "", function(result) {
           return cb(result.rows[0]);
@@ -29,8 +34,17 @@
         return this.db.query("select * from " + this.merch + " where merch_id=" + params.id + "", function(result) {
           return cb(result.rows[0]);
         });
+      } else if (params.id !== '') {
+        return this.db.query("select * from " + this.sweep + " where sweep_id=" + params.id + "", function(result) {
+          if (result.rows.length > 0) cb(result.rows[0]);
+          if (result.rows.length === 0) {
+            return _this.db.query("select * from " + _this.merch + " where merch_id=" + params.id + "", function(result2) {
+              return cb(result2.rows[0]);
+            });
+          }
+        });
       } else {
-        return cb(params.type);
+        return cb('');
       }
     };
 
@@ -256,6 +270,45 @@
       return this.db.query("select max(" + id + ") from " + db, function(result) {
         return cb(result.rows[0].max + 1);
       });
+    };
+
+    Rewards.prototype.update = function(params, cb) {
+      var db, id, ov, value, w;
+      value = 'set';
+      ov = value;
+      if ((params.cost != null) && params.cost !== '') {
+        if (value !== ov) value = value + ',';
+        value = value + " cost='" + params.cost + "'";
+      }
+      if ((params.name != null) && params.name !== '') {
+        if (value !== ov) value = value + ',';
+        value = value + " name='" + params.name + "'";
+      }
+      if (params.type === 'merch') {
+        db = this.merch;
+        if ((params.quantity != null) && params.quantity !== '') {
+          if (value !== ov) value = value + ',';
+          value = value + " quantity='" + params.quantity + "'";
+        }
+      } else if (params.type === 'sweep') {
+        db = this.sweep;
+        if ((params.end_date != null) && params.end_date !== '') {
+          if (value !== ov) value = value + ',';
+          value = value + " end_date='" + params.end_date + "'";
+        }
+      } else {
+        cb('nothing to update');
+        return;
+      }
+      if (value !== ov && (params.id != null) && params.id !== '') {
+        id = db === this.merch ? 'merch_id' : 'sweep_id';
+        w = " where " + id + "=" + params.id + "";
+        return this.db.query("update " + db + " " + value + w, function(result) {
+          return cb('update ' + params.name);
+        });
+      } else {
+        return cb('nothing to update');
+      }
     };
 
     return Rewards;

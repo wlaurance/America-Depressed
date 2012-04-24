@@ -8,6 +8,9 @@ class Rewards
     @rewards_earned = 'rewards_earned'
 
   getSpecific:(params, cb)=>
+    if params.id is ''
+      cb ''
+      return
     if params.type is 'sweep'
       @db.query "select * from " + @sweep + " where sweep_id="+ params.id + "", (result)->
         cb result.rows[0]
@@ -15,8 +18,14 @@ class Rewards
     else if params.type is 'merch'
       @db.query "select * from " + @merch + " where merch_id="+ params.id + "", (result)->
         cb result.rows[0]
+    else if params.id isnt ''
+      @db.query "select * from " + @sweep + " where sweep_id="+ params.id + "", (result)=>
+        cb result.rows[0] if result.rows.length > 0
+        if result.rows.length is 0
+          @db.query "select * from " + @merch + " where merch_id="+ params.id + "", (result2)->
+            cb result2.rows[0]
     else
-      cb params.type
+      cb ''
 
   getRange:(params, cb)->
     upper = Number(params.upper)
@@ -168,6 +177,45 @@ class Rewards
     id = if db is @merch then 'merch_id' else 'sweep_id'
     @db.query "select max("+id+") from " + db, (result)->
       cb (result.rows[0].max + 1)
+
+
+  update:(params, cb)->
+    value = 'set'
+    ov = value
+    if params.cost? and params.cost isnt ''
+      if value isnt ov
+        value = value + ','
+      value = value + " cost='" + params.cost + "'"
+    if params.name? and params.name isnt ''
+      if value isnt ov
+        value = value + ','
+      value = value + " name='" + params.name + "'"
+
+    if params.type is 'merch'
+      db = @merch
+      if params.quantity? and params.quantity isnt ''
+        if value isnt ov
+          value = value + ','
+        value = value + " quantity='" + params.quantity + "'"
+    else if params.type is 'sweep'
+      db = @sweep
+      if params.end_date? and params.end_date isnt ''
+        if value isnt ov
+          value = value + ','
+        value = value + " end_date='" + params.end_date + "'"
+    else
+      cb 'nothing to update'
+      return
+
+    if value isnt ov and params.id? and params.id isnt ''
+      id = if db is @merch then 'merch_id' else 'sweep_id'
+      w = " where " + id + "=" + params.id + ""
+      @db.query "update " + db +  " " + value + w, (result)->
+        cb 'update ' + params.name
+    else
+      cb 'nothing to update'
+    
+
 
 module.exports = Rewards
 

@@ -11,13 +11,23 @@
 session_start();
 require_once('lib/api.php');
 if (isset($_SESSION['admintoken']))
-  print_info();
+{
+  if ($_SERVER['REQUEST_METHOD'] == 'POST')
+  {
+    updateReward($_POST);
+    header("Location: adminlist.php?d=r&t=br");
+  }
+  else
+  {
+    print_info();
+  }
+}
 else
   header("Location: adminlogin.php");
  function print_info()
    {	
 	$type = $_GET["t"];
-	$acct = $_GET["account"];
+	$id = $_GET["account"];
 ?>
 
 <html>
@@ -37,24 +47,25 @@ else
 			<div class="title">
 				<?php
 					if($type=="a")
-						echo "Updating Account Number: " . $acct;
+						echo "Updating Account Number: " . $id;
 					else
-						echo "Updating Reward Number: " . $acct;
+						echo "Updating Reward Number: " . $id;
 				?>
 			</div>
 			<br/>
 			<br/>
-			<div class="infotable">
+      <div class="infotable">
+      <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 			<table border="0" class="info">
 
-				<?php print_stuff($type);?>
+				<?php print_stuff($type, $id);?>
 
 				
 			</table>
 			<br/>
 			<table border="0">
 			<tr><td>
-			<form><input type="submit" value="Update" /></form>
+			<input type="submit" value="Update" /></form>
 			</td></tr>
 			</table>
 			</div>
@@ -74,7 +85,7 @@ else
 <?php
 }
 
-function print_stuff($type){
+function print_stuff($type, $id){
 	if($type=="a"){
 ?>
 		<tr>
@@ -101,18 +112,26 @@ function print_stuff($type){
 <?php
 	}
 	else {
+    $reward = getReward($id);
+    if (isset($reward->{'merch_id'}))
+      $t = 'merch'; 
+    else
+      $t = 'sweep';
+
 ?>
-		<tr>
-		<td>Name:</td><td><input type="text" name="name" size="25" /></td>
+    <input type="hidden" name="type" value="<?php echo $t; ?>"/>
+		<input type="hidden" name="id" value="<?php echo $id; ?>"/>
+    <tr>
+    <td>Name:</td><td><input type="text" name="name" size="25" value="<?php echo $reward->{'name'}; ?>"/></td>
 		</tr>
 		<tr>
-		<td>Cost:</td><td><input type="text" name="cost" size="25" /></td>
+		<td>Cost:</td><td><input type="text" name="cost" size="25" /value="<?php echo $reward->{'cost'}; ?>"></td>
 		</tr>
 		<tr>
-		<td>End Date (if Sweepstakes):</td><td><input type="text" name="end_date" size="25" /></td>
+		<td>End Date (if Sweepstakes):</td><td><input type="text" name="end_date" size="25" /value="<?php echo $reward->{'end_date'}; ?>"></td>
 		</tr>
 		<tr>
-		<td>Quantity (if Merchandise):</td><td><input type="text" name="quantity" size="25" /></td>
+		<td>Quantity (if Merchandise):</td><td><input type="text" name="quantity" size="25" /value="<?php echo $reward->{'quantity'}; ?>"></td>
 		</tr>
 
 <?php 

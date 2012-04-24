@@ -157,6 +157,18 @@ function getRewards($type, $upper)
   return json_decode($result);
 }
 
+function getReward($id)
+{
+  global $url;
+  $route = $url . '/rewards/specific';
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route . "?id=". $id);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  $z = json_decode($result);
+  return $z->{'reward'};
+}
 function getAdminRewards($type)
 {
   global $url;
@@ -179,6 +191,20 @@ function createReward($reward)
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $route);
   curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid={$_SESSION['admintoken']}&name={$reward['name']}&type={$reward['type']}&cost={$reward['cost']}&end_date={$reward['end_date']}&quantity={$reward['quantity']}");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return json_decode($result);
+}
+
+function updateReward($reward)
+{
+  global $url;
+  $route = $url . '/rewards/update';
+  $reward = encodeparams($reward);
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $route);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "sessionid={$_SESSION['admintoken']}&id={$reward['id']}&name={$reward['name']}&type={$reward['type']}&cost={$reward['cost']}&end_date={$reward['end_date']}&quantity={$reward['quantity']}");
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   $result = curl_exec($ch);
   curl_close($ch);

@@ -189,7 +189,7 @@
       this.get(/\/specific/).bind(function(res, params) {
         return rewards.getSpecific(params, function(r) {
           return res.send(200, {}, {
-            rewards: r
+            reward: r
           });
         });
       });
@@ -214,8 +214,15 @@
           });
         });
       });
-      return this.post(/\/create/).bind(function(res, params) {
+      this.post(/\/create/).bind(function(res, params) {
         return rewards.create(params, function(result) {
+          return res.send(200, {}, {
+            reward: result
+          });
+        });
+      });
+      return this.post(/\/update/).bind(function(res, params) {
+        return rewards.update(params, function(result) {
           return res.send(200, {}, {
             reward: result
           });
