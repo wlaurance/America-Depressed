@@ -71,7 +71,7 @@ else
 			<table border="0" class="info">
 				<tr>
 				<td><p style="font-size:large; text-align:center; font-weight:bold; 
-        			text-decoration:underline;">Update an Account</p></td>
+        			text-decoration:underline;">Update an Active Account</p></td>
         		</tr>
         		<tr><td>Account Number: <input type="text" name="account" size="25" /></td>
         		</tr>

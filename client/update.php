@@ -72,7 +72,12 @@ else
 			</table>
 			</div>
 		<br/>	
-		<br/>
+		<table border="0">
+			<td><form action="acctinfo.php" method="get"><input type="submit" value="Home" /></form></td>
+			<td><form action="logout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+			</tr>
+			</table>
+
 		</div>
 		
 		</center>

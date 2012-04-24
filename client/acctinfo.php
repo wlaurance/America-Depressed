@@ -67,11 +67,12 @@ else
 				   echo $account->{'account_num_i'};
 				 ?></td>
         </tr>
-        <?php if(isset($account->{'account_num_a'})) { ?>
         <tr>
-        <td>Balance:</td><td><?php echo $account->{'balance'}; ?></td>
+        <td>Balance:</td><td><?php if(isset($account->{'balance'}))
+        								echo $account->{'balance'}; 
+        							else
+        								echo "---"; ?></td>
         </tr>
-        <?php } ?>
         <tr>
         <td>Reward Account Number:</td><td><?php echo $reward->{'acct_id'}; ?></td>
         </tr>
