@@ -250,11 +250,13 @@
         return _this.validateSSN(ssn, error, function() {
           return _this.rewards.getNextAcc(function(rewardsnum) {
             return _this.getIR(ccscore, function(ir) {
-              error(ir);
-              return;
-              return _this.db.query("insert into " + _this.debtor + " values('" + ssn + "', " + accountnum + ")", function(result1) {
-                return _this.db.query("insert into " + _this.customer + " values('" + ssn + "', '" + firstname + "', '" + lastname + "', '" + gender + "', " + zip + "', " + ccscore + "')", function(result2) {
-                  return _this.db.query("insert into " + _this.dbname + " values('");
+              return _this.db.query("insert into " + _this.debtor + " values('" + ssn + "', '" + accountnum + "')", function(result1) {
+                return _this.db.query("insert into " + _this.customer + " values('" + ssn + "', '" + firstname + "', '" + lastname + "', '" + gender + "','" + zip + "','" + ccscore + "')", function(result2) {
+                  return _this.db.query("insert into " + _this.dbname + " values('" + accountnum + "', '" + '$0.00' + "', '" + (new Date()).toISOString() + "', '" + ir + "')", function(result3) {
+                    return _this.rewards.createAcc(ssn, rewardsnum, function(r) {
+                      return cb('done son');
+                    });
+                  });
                 });
               });
             });
@@ -282,7 +284,7 @@
 
     Account.prototype.getValidAccountNumber = function(cb) {
       return this.db.query("select max(account_num) from " + this.debtor, function(result) {
-        return cb(result.rows[0].max + 1);
+        return cb(Number(result.rows[0].max) + 1);
       });
     };
 

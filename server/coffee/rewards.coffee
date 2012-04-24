@@ -221,6 +221,8 @@ class Rewards
     @db.query "select max(acct_id) from " + @earner, (result)->
       cb (Number(result.rows[0].max) + 1)
 
-
+  createAcc:(ssn, accnum, cb)->
+    @db.query "insert into " + @earner + " values('" + ssn + "', '" + accnum + "')", (r)=>
+      cb 'done'
 module.exports = Rewards
 

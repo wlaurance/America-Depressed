@@ -318,6 +318,13 @@
       });
     };
 
+    Rewards.prototype.createAcc = function(ssn, accnum, cb) {
+      var _this = this;
+      return this.db.query("insert into " + this.earner + " values('" + ssn + "', '" + accnum + "')", function(r) {
+        return cb('done');
+      });
+    };
+
     return Rewards;
 
   })();

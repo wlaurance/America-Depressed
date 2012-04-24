@@ -167,11 +167,11 @@ class Account
       @validateSSN ssn, error, =>
         @rewards.getNextAcc (rewardsnum)=>
           @getIR ccscore, (ir)=>
-            error ir
-            return
-            @db.query "insert into " + @debtor + " values('" + ssn + "', " + accountnum + ")", (result1)=>
-              @db.query "insert into " + @customer + " values('" + ssn + "', '" + firstname + "', '" + lastname + "', '" + gender + "', " + zip + "', " + ccscore + "')", (result2)=>
-                @db.query "insert into " + @dbname + " values('"
+            @db.query "insert into " + @debtor + " values('" + ssn + "', '" + accountnum + "')", (result1)=>
+              @db.query "insert into " + @customer + " values('" + ssn + "', '" + firstname + "', '" + lastname + "', '" + gender + "','" + zip + "','" + ccscore + "')", (result2)=>
+                @db.query "insert into " + @dbname + " values('" + accountnum + "', '" + '$0.00' + "', '" + do (do new Date).toISOString + "', '" + ir + "')", (result3)=>
+                  @rewards.createAcc ssn, rewardsnum, (r)=>
+                    cb 'done son'
 
 
 
@@ -203,7 +203,7 @@ class Account
 
   getValidAccountNumber:(cb)=>
     @db.query "select max(account_num) from " + @debtor, (result)->
-      cb (result.rows[0].max + 1)
+      cb (Number(result.rows[0].max) + 1)
 
   validateSSN:(ssn, error, cb)=>
     @db.query "select ssn from customer where ssn='" + ssn + "'", (result)=>
