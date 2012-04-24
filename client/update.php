@@ -57,12 +57,12 @@ else
         		<td>Zip:</td><td><select name="zip">
             <?php 
       foreach($zips as $zip){ ?>
-      <option value="<?php echo $zip;?>" selected="
+      <option value="<?php echo $zip;?>" 
         <?php if ($zip == $account->{'zip'}){
-          echo 'selected';
+          echo 'selected="selected"';
           }
          ?>
-        ">
+        >
       <?php echo $zip; ?></option>
     <?php } ?>
            </td> 
