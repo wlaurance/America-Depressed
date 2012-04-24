@@ -120,6 +120,7 @@
                   newbalance = Number(oldbalance) - Number(money.getNumber(amount));
                   return _this.updateBalance(newbalance, accountnumber, function(result2) {
                     cb(result);
+                    amount = money.getNumber(amount);
                     params.points = Math.floor(amount / 100);
                     return _this.rewards.updatePoints(params, function(r3) {});
                   });

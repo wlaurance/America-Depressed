@@ -71,6 +71,7 @@ class Account
                 newbalance = Number(oldbalance) - Number(money.getNumber amount)
                 @updateBalance newbalance, accountnumber, (result2)=>
                   cb result
+                  amount = money.getNumber amount
                   params.points = Math.floor amount/100
                   @rewards.updatePoints params, (r3)=>
                 
