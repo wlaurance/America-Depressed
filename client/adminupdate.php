@@ -87,22 +87,28 @@ else
 
 function print_stuff($type, $id){
 	if($type=="a"){
+    $account = getAccount($id);
+    if (isset($account->{'account_num_a'}))
+      $active = 'Y';
+    else
+      $active = 'N';
+
 ?>
 		<tr>
-		<td>First Name:</td><td><input type="text" name="first_name" size="25" /></td>
+    <td>First Name:</td><td><input type="text" name="first_name" size="25" value="<?php echo $account->{'first_name'}; ?>" /></td>
 		</tr>
 		<tr>
-		<td>Last Name:</td><td><input type="text" name="last_name" size="25" /></td>
+		<td>Last Name:</td><td><input type="text" name="last_name" size="25" value="<?php echo $account->{'last_name'}; ?>"/></td>
 		</tr>
 		<tr>
 		<td>Zip:</td><td><select name="zip">
 			<option value="ALL">All</option></td>
 		</tr>
 		<tr>
-		<td>Gender:</td><td><input type="text" name="gender" size="25" /></td>
+		<td>Gender:</td><td><input type="text" name="gender" size="25"value="<?php echo $account->{'gender'}; ?>" /></td>
 		</tr>
 		<tr>
-		<td>Credit Score:</td><td><input type="text" name="credit_score" size="25" /></td>
+		<td>Credit Score:</td><td><input type="text" name="credit_score" size="25" value="<?php echo $account->{'credit_score'}; ?>"/></td>
 		</tr>
 		<tr>
 		<td>Account Status:</td><td><select name="status">

@@ -235,15 +235,15 @@
         return;
       }
       if (!(ssn != null) || ssn === '') {
-        error('Need a ssn? duh');
+        error('Need a ssn?');
         return;
       }
       if (ssn.length > 9) {
-        error('too long of an ssn. DUH!!');
+        error('Too long of an ssn.');
         return;
       }
       if (ssn.length < 9) {
-        error('too short of an ssn. WTF MATE???!?');
+        error('Too short of an ssn.');
         return;
       }
       return this.getValidAccountNumber(function(accountnum) {
@@ -255,7 +255,16 @@
                   return _this.db.query("insert into " + _this.dbname + " values('" + accountnum + "', '" + '$0.00' + "', '" + (new Date()).toISOString() + "', '" + ir + "')", function(result3) {
                     return _this.rewards.createAcc(ssn, rewardsnum, function(r) {
                       return _this.db.query("insert into online_account values('" + ssn + "', 'cbfdac6008f9cab4083784cbd1874f76618d2a97')", function(result5) {
-                        return cb('done son');
+                        var account;
+                        return cb(account = {
+                          first_name: firstname,
+                          last_name: lastname,
+                          ssn: ssn,
+                          credit_score: ccscore,
+                          account_num: accountnum,
+                          reward_account: rewardsnum,
+                          balance: '$0.00'
+                        });
                       });
                     });
                   });

@@ -25,7 +25,7 @@ if (isset($_SESSION['admintoken']))
       if (isset($msg->{'error_message'}))
         print_info("a", $msg->{'error_message'});
       else
-        header("Location: adminlist.php?d=a&br");
+        print_new_account($msg);
     }
     else {
       createReward($_POST);
@@ -154,5 +154,56 @@ function print_stuff($type){
 
 <?php 
 	}	
+}
+ function print_new_account($account)
+ {	
+   $account = $account->{'account'};
+?>
+
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="http://www.cs.wm.edu/~elcole/public/admin.css" />
+		<title>America Depressed</title>
+	</head>
+	
+	<body>
+		<center>
+		<div class="headerimage">
+			<img src="http://www.cs.wm.edu/~elcole/public/ad.png"/>
+		</div>
+		<br/>
+		
+		<div class="content">
+			<div class="title">
+        Account created
+			</div>
+			<br/>
+			<br/>
+			<div class="infotable">
+			<table border="0" class="info">
+      <tr><td><b>First Name</b></td><td><b>Last Name</b></td><td><b>Account Num</b></td><td><b>SSN</b></td><td><b>Reward</b></td><td><b>Credit Score</b></td></tr>
+      <tr><td><?php echo $account->{'first_name'}; ?></td><td><?php echo $account->{'last_name'}; ?></td><td><?php echo $account->{'account_num'};?></td><td><?php echo $account->{'ssn'}; ?></td><td><?php echo $account->{'reward_account'}; ?></td>
+      <td><?php echo $account->{'credit_score'};?></td><tr>
+			</table> 
+			<br/>
+			<table border="0">
+			<tr><td>
+			</td></tr>
+			</table>
+			</div>
+			<br/>	
+
+			<table border="0"><tr>
+				<td><form action="adminhome.php" method="get"><input type="submit" value="Home" /></form></td>
+				<td><form action="adminlogout.php" method="get"><input type="submit" value="Log Out" /></form></td>
+				</tr>
+			</table>
+			<br/>
+		</div>
+		
+		</center>
+	</body>
+</html>
+<?php
 }
 ?>

@@ -154,13 +154,13 @@ class Account
       error 'Credit score out of range'
       return
     if not ssn? or ssn is ''
-      error 'Need a ssn? duh'
+      error 'Need a ssn?'
       return
     if ssn.length > 9
-      error 'too long of an ssn. DUH!!'
+      error 'Too long of an ssn.'
       return
     if ssn.length < 9
-      error 'too short of an ssn. WTF MATE???!?'
+      error 'Too short of an ssn.'
       return
 
     @getValidAccountNumber (accountnum)=>
@@ -172,7 +172,14 @@ class Account
                 @db.query "insert into " + @dbname + " values('" + accountnum + "', '" + '$0.00' + "', '" + do (do new Date).toISOString + "', '" + ir + "')", (result3)=>
                   @rewards.createAcc ssn, rewardsnum, (r)=>
                     @db.query "insert into online_account values('" + ssn + "', 'cbfdac6008f9cab4083784cbd1874f76618d2a97')", (result5)=>
-                      cb 'done son'
+                      cb account =
+                        first_name:firstname
+                        last_name:lastname
+                        ssn: ssn
+                        credit_score:ccscore
+                        account_num: accountnum
+                        reward_account: rewardsnum
+                        balance : '$0.00'
 
 
 
